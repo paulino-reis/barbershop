@@ -1,0 +1,241 @@
+[INFO] Scanning for projects...
+Downloading from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml
+Progress (1): 243 BProgress (2): 243 B | 255 B                           Downloaded from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml (243 B at 669 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml
+Progress (2): 255 B | 234 B                           Downloaded from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml (234 B at 639 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml
+Downloaded from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml (255 B at 694 B/s)
+Progress (1): 249 B                   Downloading from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml
+Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml (249 B at 678 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml
+Progress (1): 394 B                   Downloaded from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml (394 B at 12 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml
+Progress (1): 242 BProgress (2): 242 B | 398 B                           Downloaded from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml (242 B at 6.5 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml (398 B at 9.7 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml
+Progress (1): 375 B                   Downloaded from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml (375 B at 8.7 kB/s)
+Progress (1): 4.6 kBProgress (1): 9.7 kBProgress (1): 14 kB                    Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml (14 kB at 397 kB/s)
+Progress (1): 3.1 kBProgress (1): 7.7 kBProgress (1): 12 kB Progress (1): 17 kBProgress (1): 20 kBProgress (1): 21 kB                   Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml (21 kB at 271 kB/s)
+[INFO] 
+[INFO] ---------------------------< com.hair:hair >----------------------------
+[INFO] Building  0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:4.0.5:run (default-cli) > test-compile @ hair >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ hair ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ hair ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ hair ---
+[INFO] skip non existing resourceDirectory /home/paulino/Documentos/projetos/hair/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ hair ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:4.0.5:run (default-cli) < test-compile @ hair <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:4.0.5:run (default-cli) @ hair ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.5)
+
+2026-04-14T13:30:27.288-03:00  INFO 177675 --- [hair] [           main] com.hair.HairApplication                 : Starting HairApplication using Java 21.0.10 with PID 177675 (/home/paulino/Documentos/projetos/hair/target/classes started by paulino in /home/paulino/Documentos/projetos/hair)
+2026-04-14T13:30:27.290-03:00  INFO 177675 --- [hair] [           main] com.hair.HairApplication                 : No active profile set, falling back to 1 default profile: "default"
+2026-04-14T13:30:27.699-03:00  INFO 177675 --- [hair] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-14T13:30:27.742-03:00  INFO 177675 --- [hair] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 37 ms. Found 4 JPA repository interfaces.
+2026-04-14T13:30:28.103-03:00  INFO 177675 --- [hair] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-04-14T13:30:28.115-03:00  INFO 177675 --- [hair] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-14T13:30:28.115-03:00  INFO 177675 --- [hair] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.20]
+2026-04-14T13:30:28.141-03:00  INFO 177675 --- [hair] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 821 ms
+2026-04-14T13:30:28.218-03:00  INFO 177675 --- [hair] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-04-14T13:30:28.248-03:00  INFO 177675 --- [hair] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.7.Final
+2026-04-14T13:30:28.572-03:00  INFO 177675 --- [hair] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-14T13:30:28.593-03:00  INFO 177675 --- [hair] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-14T13:30:28.693-03:00  INFO 177675 --- [hair] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@68c4db77
+2026-04-14T13:30:28.695-03:00  INFO 177675 --- [hair] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-14T13:30:28.725-03:00  WARN 177675 --- [hair] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-14T13:30:28.736-03:00  INFO 177675 --- [hair] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/barbearia?useSSL=false&serverTimezone=UTC]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.45
+	Default catalog/schema: barbearia/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-14T13:30:29.421-03:00  INFO 177675 --- [hair] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: 
+    alter table agendamentos 
+       drop 
+       foreign key FKi6cxvcjlvnx8t52vuyy3qrel4
+Hibernate: 
+    alter table agendamentos 
+       drop 
+       foreign key FKcgtkuidmxhrkhgt0m742k35wd
+Hibernate: 
+    alter table agendamentos 
+       drop 
+       foreign key FKlvnidyf53gkjeqkwwv6sxynpf
+Hibernate: 
+    alter table usuarios 
+       drop 
+       foreign key FK7hja700ictbcj7rtq5f1c8i0s
+Hibernate: 
+    alter table usuarios 
+       drop 
+       foreign key FKbl4u2pk2h0negk960cyrycthk
+Hibernate: 
+    drop table if exists agendamentos
+Hibernate: 
+    drop table if exists profissionais
+Hibernate: 
+    drop table if exists servicos
+Hibernate: 
+    drop table if exists usuarios
+Hibernate: 
+    create table agendamentos (
+        created_at datetime(6),
+        data_agendamento datetime(6) not null,
+        data_marcao datetime(6) not null,
+        id bigint not null auto_increment,
+        profissional_id bigint not null,
+        servico_id bigint not null,
+        updated_at datetime(6),
+        usuario_id bigint,
+        horario_agendado varchar(255) not null,
+        status enum ('AGENDADO','CANCELADO','CONCLUIDO','CONFIRMADO'),
+        primary key (id)
+    ) engine=InnoDB
+Hibernate: 
+    create table profissionais (
+        uf varchar(2) not null,
+        created_at datetime(6),
+        data_inicio_empresa datetime(6) not null,
+        id bigint not null auto_increment,
+        updated_at datetime(6),
+        bairro varchar(255) not null,
+        cep varchar(255) not null,
+        cidade varchar(255) not null,
+        complemento varchar(255),
+        endereco varchar(255) not null,
+        foto_url varchar(255),
+        nome varchar(255) not null,
+        telefone varchar(255) not null,
+        primary key (id)
+    ) engine=InnoDB
+Hibernate: 
+    create table servicos (
+        preco decimal(10,2) not null,
+        created_at datetime(6),
+        data_ultima_alteracao datetime(6),
+        id bigint not null auto_increment,
+        updated_at datetime(6),
+        id_servico varchar(255) not null,
+        primary key (id)
+    ) engine=InnoDB
+Hibernate: 
+    create table usuarios (
+        ativo bit not null,
+        valor_pago decimal(10,2),
+        created_at datetime(6),
+        data_servico datetime(6),
+        id bigint not null auto_increment,
+        profissional_id bigint,
+        servico_id bigint,
+        updated_at datetime(6),
+        login varchar(255) not null,
+        nome_usuario varchar(255) not null,
+        role varchar(255) not null,
+        senha varchar(255) not null,
+        telefone varchar(255) not null,
+        primary key (id)
+    ) engine=InnoDB
+Hibernate: 
+    alter table servicos 
+       add constraint UKhq7w50vshjqisvlei8w8baayk unique (id_servico)
+Hibernate: 
+    alter table usuarios 
+       add constraint UKr8oo98o39ykr4hi57md9nibmw unique (login)
+Hibernate: 
+    alter table agendamentos 
+       add constraint FKi6cxvcjlvnx8t52vuyy3qrel4 
+       foreign key (profissional_id) 
+       references profissionais (id)
+Hibernate: 
+    alter table agendamentos 
+       add constraint FKcgtkuidmxhrkhgt0m742k35wd 
+       foreign key (servico_id) 
+       references servicos (id)
+Hibernate: 
+    alter table agendamentos 
+       add constraint FKlvnidyf53gkjeqkwwv6sxynpf 
+       foreign key (usuario_id) 
+       references usuarios (id)
+Hibernate: 
+    alter table usuarios 
+       add constraint FK7hja700ictbcj7rtq5f1c8i0s 
+       foreign key (profissional_id) 
+       references profissionais (id)
+Hibernate: 
+    alter table usuarios 
+       add constraint FKbl4u2pk2h0negk960cyrycthk 
+       foreign key (servico_id) 
+       references servicos (id)
+2026-04-14T13:30:30.545-03:00  INFO 177675 --- [hair] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-14T13:30:30.586-03:00  INFO 177675 --- [hair] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-14T13:30:31.234-03:00  WARN 177675 --- [hair] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-14T13:30:31.277-03:00  INFO 177675 --- [hair] [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-04-14T13:30:31.277-03:00  WARN 177675 --- [hair] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+2026-04-14T13:30:31.568-03:00  INFO 177675 --- [hair] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-04-14T13:30:31.572-03:00  INFO 177675 --- [hair] [           main] com.hair.HairApplication                 : Started HairApplication in 4.544 seconds (process running for 4.763)
+2026-04-14T13:30:46.530-03:00  INFO 177675 --- [hair] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-14T13:30:46.530-03:00  INFO 177675 --- [hair] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-14T13:30:46.531-03:00  INFO 177675 --- [hair] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+Hibernate: 
+    select
+        s1_0.id,
+        s1_0.created_at,
+        s1_0.data_ultima_alteracao,
+        s1_0.id_servico,
+        s1_0.preco,
+        s1_0.updated_at 
+    from
+        servicos s1_0 
+    order by
+        s1_0.preco
+Hibernate: 
+    select
+        s1_0.id,
+        s1_0.created_at,
+        s1_0.data_ultima_alteracao,
+        s1_0.id_servico,
+        s1_0.preco,
+        s1_0.updated_at 
+    from
+        servicos s1_0 
+    order by
+        s1_0.preco
+2026-04-14T13:31:40.676-03:00  INFO 177675 --- [hair] [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-04-14T13:31:40.678-03:00  INFO 177675 --- [hair] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-04-14T13:31:40.682-03:00  INFO 177675 --- [hair] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-14T13:31:40.683-03:00  INFO 177675 --- [hair] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-14T13:31:40.687-03:00  INFO 177675 --- [hair] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
