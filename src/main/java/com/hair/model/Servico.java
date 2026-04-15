@@ -21,8 +21,11 @@ public class Servico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "id_servico", unique = true, nullable = false)
+    @Column(name = "id_servico", unique = true)
     private String idServico;
+    
+    @Column(nullable = false)
+    private String nome;
     
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal preco;

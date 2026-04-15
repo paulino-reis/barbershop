@@ -1,10 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import Login from './pages/Login';
+import LoginScreen from './pages/LoginScreen';
 import Register from './pages/Register';
 import Agendamento from './pages/Agendamento';
+import ServicesSelection from './pages/ServicesSelection';
+import AppointmentBooking from './pages/AppointmentBooking';
 import Perfil from './pages/Perfil';
+import Administrativo from './pages/Administrativo';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -13,13 +16,29 @@ function App() {
       <Router>
         <div className="App">
           <Routes>
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<LoginScreen />} />
             <Route path="/register" element={<Register />} />
+            <Route 
+              path="/servicos" 
+              element={
+                <ProtectedRoute>
+                  <ServicesSelection />
+                </ProtectedRoute>
+              } 
+            />
             <Route 
               path="/agendamento" 
               element={
                 <ProtectedRoute>
                   <Agendamento />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/booking" 
+              element={
+                <ProtectedRoute>
+                  <AppointmentBooking />
                 </ProtectedRoute>
               } 
             />
@@ -31,7 +50,15 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            <Route path="/" element={<Navigate to="/agendamento" />} />
+            <Route 
+              path="/administrativo" 
+              element={
+                <ProtectedRoute>
+                  <Administrativo />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/" element={<Navigate to="/servicos" />} />
           </Routes>
         </div>
       </Router>

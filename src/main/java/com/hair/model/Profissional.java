@@ -49,6 +49,15 @@ public class Profissional {
     @Column(nullable = false, length = 2)
     private String uf;
     
+    @Column(name = "hora_inicio")
+    private String horaInicio;
+    
+    @Column(name = "hora_fim")
+    private String horaFim;
+    
+    @Column(name = "dias_disponiveis")
+    private String diasDisponiveis;
+    
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

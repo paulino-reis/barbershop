@@ -1,9 +1,10 @@
 package com.hair.controller;
 
+import com.hair.dto.EstatisticasProfissionalDTO;
+import com.hair.dto.HorarioOcupadoDTO;
 import com.hair.model.Agendamento;
 import com.hair.model.Profissional;
 import com.hair.service.AgendamentoService;
-import com.hair.service.ProfissionalService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/agendamentos")
@@ -22,13 +24,19 @@ import java.util.List;
 public class AgendamentoController {
     
     private final AgendamentoService agendamentoService;
-    private final ProfissionalService profissionalService;
-    
+
     @GetMapping("/horarios-disponiveis")
     public ResponseEntity<List<String>> getHorariosDisponiveis(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime data,
             @RequestParam(required = false) Long profissionalId) {
         return ResponseEntity.ok(agendamentoService.getHorariosDisponiveis(data, profissionalId));
+    }
+    
+    @GetMapping("/horarios-ocupados")
+    public ResponseEntity<List<HorarioOcupadoDTO>> getHorariosOcupados(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime data,
+            @RequestParam(required = false) Long profissionalId) {
+        return ResponseEntity.ok(agendamentoService.getHorariosOcupados(data, profissionalId));
     }
     
     @GetMapping("/profissionais-disponiveis")
@@ -65,16 +73,24 @@ public class AgendamentoController {
         return ResponseEntity.ok(agendamentoService.buscarPorPeriodo(inicio, fim));
     }
     
+    @GetMapping("/estatisticas")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<EstatisticasProfissionalDTO>> getEstatisticasPorProfissional(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim) {
+        return ResponseEntity.ok(agendamentoService.getEstatisticasPorProfissional(inicio, fim));
+    }
+    
     @PostMapping
     public ResponseEntity<Agendamento> salvar(@Valid @RequestBody Agendamento agendamento, 
                                              Authentication authentication) {
-        return ResponseEntity.ok(agendamentoService.salvar(agendamento));
+        return ResponseEntity.ok(agendamentoService.salvar(agendamento, authentication));
     }
     
     @PutMapping("/{id}")
     public ResponseEntity<Agendamento> atualizar(
             @PathVariable Long id, @Valid @RequestBody Agendamento agendamento) {
-        if (!agendamentoService.buscarPorId(id).isPresent()) {
+        if (agendamentoService.buscarPorId(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         agendamento.setId(id);
@@ -88,10 +104,17 @@ public class AgendamentoController {
     }
     
     @PostMapping("/{id}/confirmar")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> confirmar(@PathVariable Long id) {
-        agendamentoService.confirmar(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Map<String, String>> confirmar(@PathVariable Long id) {
+        // Check if user is admin or owns the appointment
+        Agendamento agendamento = agendamentoService.buscarPorId(id).orElse(null);
+        if (agendamento == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        String whatsappLink = agendamentoService.confirmar(id);
+        Map<String, String> response = new java.util.HashMap<>();
+        response.put("whatsappLink", whatsappLink);
+        return ResponseEntity.ok(response);
     }
     
     @DeleteMapping("/{id}")

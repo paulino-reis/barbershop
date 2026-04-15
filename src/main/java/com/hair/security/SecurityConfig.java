@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -31,16 +30,16 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/agendamentos/horarios-disponiveis", "/api/agendamentos/horarios-ocupados").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/usuarios/cadastrar").permitAll()
                 .requestMatchers("/api/servicos").permitAll()
                 .requestMatchers("/api/profissionais").permitAll()
-                .requestMatchers("/api/horarios-disponiveis/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
             )
@@ -67,7 +66,7 @@ public class SecurityConfig {
     }
     
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
         return config.getAuthenticationManager();
     }
     

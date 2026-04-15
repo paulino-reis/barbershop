@@ -6,7 +6,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -51,13 +50,11 @@ public class ProfissionalController {
     }
     
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Profissional> salvar(@Valid @RequestBody Profissional profissional) {
         return ResponseEntity.ok(profissionalService.salvar(profissional));
     }
     
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Profissional> atualizar(
             @PathVariable Long id, @Valid @RequestBody Profissional profissional) {
         if (!profissionalService.existePorId(id)) {
@@ -68,7 +65,6 @@ public class ProfissionalController {
     }
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         profissionalService.deletar(id);
         return ResponseEntity.noContent().build();

@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Configure axios to always use JSON
+axios.defaults.headers.common['Content-Type'] = 'application/json';
+
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -39,12 +42,14 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await axios.post('/api/auth/login', credentials);
-      const { token, id, login: username, nome, role } = response.data;
+      const { token, id, login: username, nome: nomeUsuario, role } = response.data;
       
       localStorage.setItem('token', token);
+      localStorage.setItem('userName', nomeUsuario);
+      localStorage.setItem('userId', id);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
-      setUser({ id, login: username, nome, role });
+      setUser({ id, login: username, nome: nomeUsuario, role });
       return { success: true };
     } catch (error) {
       return { 
@@ -57,12 +62,14 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await axios.post('/api/auth/registrar', userData);
-      const { token, id, login: username, nome, role } = response.data;
+      const { token, id, login: username, nome: nomeUsuario, role } = response.data;
       
       localStorage.setItem('token', token);
+      localStorage.setItem('userName', nomeUsuario);
+      localStorage.setItem('userId', id);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
-      setUser({ id, login: username, nome, role });
+      setUser({ id, login: username, nome: nomeUsuario, role });
       return { success: true };
     } catch (error) {
       return { 

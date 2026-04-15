@@ -39,7 +39,7 @@ public class Usuario implements UserDetails {
     @JoinColumn(name = "servico_id")
     private Servico servico;
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "profissional_id")
     private Profissional profissional;
     
@@ -80,22 +80,7 @@ public class Usuario implements UserDetails {
     public String getPassword() {
         return senha;
     }
-    
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-    
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-    
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-    
+
     @Override
     public boolean isEnabled() {
         return ativo;

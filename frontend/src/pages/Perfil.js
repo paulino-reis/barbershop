@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { User, Phone, Mail, Lock, Save, Eye, EyeOff, Scissors, Calendar } from 'lucide-react';
 import axios from 'axios';
+import Navigation from '../components/Navigation';
 
 const Perfil = () => {
   const { user } = useAuth();
@@ -138,18 +139,24 @@ const Perfil = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div 
+      className="min-h-screen"
+      style={{
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)'
+      }}
+    >
+      <Navigation />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Meu Perfil</h1>
-          <p className="mt-2 text-gray-600">Gerencie suas informações e agendamentos</p>
+          <h1 className="text-3xl font-bold text-white">Meu Perfil</h1>
+          <p className="mt-2 text-gray-400">Gerencie suas informações e agendamentos</p>
         </div>
 
         {message && (
-          <div className={`mb-6 p-4 rounded ${
+          <div className={`mb-6 p-4 rounded-lg ${
             message.includes('sucesso') 
-              ? 'bg-green-50 text-green-700 border border-green-200'
-              : 'bg-red-50 text-red-700 border border-red-200'
+              ? 'bg-green-900/30 text-green-300 border border-green-500/50'
+              : 'bg-red-900/30 text-red-300 border border-red-500/50'
           }`}>
             {message}
           </div>
@@ -157,15 +164,21 @@ const Perfil = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Informações do Perfil */}
-          <div className="card">
+          <div 
+            className="rounded-lg shadow-lg p-6"
+            style={{
+              background: 'rgba(30, 41, 59, 0.8)',
+              border: '1px solid rgba(71, 85, 105, 0.5)'
+            }}
+          >
             <div className="flex items-center mb-6">
-              <User className="h-6 w-6 text-primary-600 mr-2" />
-              <h2 className="text-xl font-semibold text-gray-900">Informações Pessoais</h2>
+              <User className="h-6 w-6 text-primary-400 mr-2" />
+              <h2 className="text-xl font-semibold text-white">Informações Pessoais</h2>
             </div>
 
             <form onSubmit={handleSalvarPerfil} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Nome Completo
                 </label>
                 <input
@@ -173,13 +186,13 @@ const Perfil = () => {
                   name="nomeUsuario"
                   value={formData.nomeUsuario}
                   onChange={handlePerfilChange}
-                  className="input-field"
+                  className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   <Mail className="inline h-4 w-4 mr-1" />
                   Login
                 </label>
@@ -188,13 +201,13 @@ const Perfil = () => {
                   name="login"
                   value={formData.login}
                   onChange={handlePerfilChange}
-                  className="input-field"
+                  className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   <Phone className="inline h-4 w-4 mr-1" />
                   Telefone
                 </label>
@@ -203,7 +216,7 @@ const Perfil = () => {
                   name="telefone"
                   value={formData.telefone}
                   onChange={handlePerfilChange}
-                  className="input-field"
+                  className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                   required
                 />
               </div>
@@ -211,7 +224,7 @@ const Perfil = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary w-full py-2"
+                className="w-full py-3 px-4 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 transition-all transform hover:scale-[1.02] disabled:transform-none shadow-lg"
               >
                 <Save className="inline h-4 w-4 mr-2" />
                 {loading ? 'Salvando...' : 'Salvar Alterações'}
@@ -220,15 +233,21 @@ const Perfil = () => {
           </div>
 
           {/* Alterar Senha */}
-          <div className="card">
+          <div 
+            className="rounded-lg shadow-lg p-6"
+            style={{
+              background: 'rgba(30, 41, 59, 0.8)',
+              border: '1px solid rgba(71, 85, 105, 0.5)'
+            }}
+          >
             <div className="flex items-center mb-6">
-              <Lock className="h-6 w-6 text-primary-600 mr-2" />
-              <h2 className="text-xl font-semibold text-gray-900">Alterar Senha</h2>
+              <Lock className="h-6 w-6 text-primary-400 mr-2" />
+              <h2 className="text-xl font-semibold text-white">Alterar Senha</h2>
             </div>
 
             <form onSubmit={handleAlterarSenha} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Senha Atual
                 </label>
                 <div className="relative">
@@ -237,7 +256,7 @@ const Perfil = () => {
                     name="senhaAtual"
                     value={senhaData.senhaAtual}
                     onChange={handleSenhaChange}
-                    className="input-field pr-10"
+                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all pr-12"
                     required
                   />
                   <button
@@ -246,16 +265,16 @@ const Perfil = () => {
                     onClick={() => setShowSenhaAtual(!showSenhaAtual)}
                   >
                     {showSenhaAtual ? (
-                      <EyeOff className="h-5 w-5 text-gray-400" />
+                      <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-200 transition-colors" />
                     ) : (
-                      <Eye className="h-5 w-5 text-gray-400" />
+                      <Eye className="h-5 w-5 text-gray-400 hover:text-gray-200 transition-colors" />
                     )}
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Nova Senha
                 </label>
                 <div className="relative">
@@ -264,7 +283,7 @@ const Perfil = () => {
                     name="novaSenha"
                     value={senhaData.novaSenha}
                     onChange={handleSenhaChange}
-                    className="input-field pr-10"
+                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all pr-12"
                     placeholder="Mínimo 6 caracteres"
                     required
                   />
@@ -274,16 +293,16 @@ const Perfil = () => {
                     onClick={() => setShowNovaSenha(!showNovaSenha)}
                   >
                     {showNovaSenha ? (
-                      <EyeOff className="h-5 w-5 text-gray-400" />
+                      <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-200 transition-colors" />
                     ) : (
-                      <Eye className="h-5 w-5 text-gray-400" />
+                      <Eye className="h-5 w-5 text-gray-400 hover:text-gray-200 transition-colors" />
                     )}
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Confirmar Nova Senha
                 </label>
                 <div className="relative">
@@ -292,7 +311,7 @@ const Perfil = () => {
                     name="confirmarNovaSenha"
                     value={senhaData.confirmarNovaSenha}
                     onChange={handleSenhaChange}
-                    className="input-field pr-10"
+                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all pr-12"
                     placeholder="Confirme a nova senha"
                     required
                   />
@@ -302,9 +321,9 @@ const Perfil = () => {
                     onClick={() => setShowConfirmarSenha(!showConfirmarSenha)}
                   >
                     {showConfirmarSenha ? (
-                      <EyeOff className="h-5 w-5 text-gray-400" />
+                      <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-200 transition-colors" />
                     ) : (
-                      <Eye className="h-5 w-5 text-gray-400" />
+                      <Eye className="h-5 w-5 text-gray-400 hover:text-gray-200 transition-colors" />
                     )}
                   </button>
                 </div>
@@ -313,7 +332,7 @@ const Perfil = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary w-full py-2"
+                className="w-full py-3 px-4 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 transition-all transform hover:scale-[1.02] disabled:transform-none shadow-lg"
               >
                 <Lock className="inline h-4 w-4 mr-2" />
                 {loading ? 'Alterando...' : 'Alterar Senha'}
@@ -323,58 +342,67 @@ const Perfil = () => {
         </div>
 
         {/* Histórico de Agendamentos */}
-        <div className="mt-8 card">
+        <div 
+          className="mt-8 rounded-lg shadow-lg p-6"
+          style={{
+            background: 'rgba(30, 41, 59, 0.8)',
+            border: '1px solid rgba(71, 85, 105, 0.5)'
+          }}
+        >
           <div className="flex items-center mb-6">
-            <Calendar className="h-6 w-6 text-primary-600 mr-2" />
-            <h2 className="text-xl font-semibold text-gray-900">Meus Agendamentos</h2>
+            <Calendar className="h-6 w-6 text-primary-400 mr-2" />
+            <h2 className="text-xl font-semibold text-white">Meus Agendamentos</h2>
           </div>
 
-          <div className="space-y-4">
-            {agendamentos.length > 0 ? (
-              agendamentos.map(agendamento => (
-                <div key={agendamento.id} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-medium text-gray-900 flex items-center">
-                        <Scissors className="h-4 w-4 mr-2" />
-                        {agendamento.servico?.idServico}
-                      </div>
-                      <div className="text-sm text-gray-600 mt-1">
-                        Profissional: {agendamento.profissional?.nome}
-                      </div>
-                      <div className="text-sm text-gray-500 mt-1">
-                        Data: {formatarData(agendamento.dataAgendamento)}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Horário: {agendamento.horarioAgendado}
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end space-y-2">
-                      <span className={`inline-block px-2 py-1 text-xs rounded ${
-                        agendamento.status === 'AGENDADO' ? 'bg-blue-100 text-blue-800' :
-                        agendamento.status === 'CONFIRMADO' ? 'bg-green-100 text-green-800' :
-                        agendamento.status === 'CANCELADO' ? 'bg-red-100 text-red-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {agendamento.status}
-                      </span>
-                      {agendamento.status === 'AGENDADO' && (
-                        <button
-                          onClick={() => cancelarAgendamento(agendamento.id)}
-                          className="btn-danger text-sm py-1 px-3"
-                        >
-                          Cancelar
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-gray-500 text-center py-8">
-                Nenhum agendamento encontrado
-              </div>
-            )}
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Serviço</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Profissional</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Data/Hora</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Status</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-700 uppercase">Ações</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {agendamentos.length > 0 ? (
+                  agendamentos.map((agendamento, index) => (
+                    <tr key={agendamento.id} className={index % 2 === 0 ? 'bg-white hover:bg-blue-300' : 'bg-gray-200 hover:bg-blue-400'}>
+                      <td className="px-4 py-2 text-sm text-gray-900">{agendamento.servico?.nome}</td>
+                      <td className="px-4 py-2 text-sm text-gray-600">{agendamento.profissional?.nome}</td>
+                      <td className="px-4 py-2 text-sm text-gray-500">{formatarData(agendamento.dataAgendamento)} às {agendamento.horarioAgendado}</td>
+                      <td className="px-4 py-2 text-sm">
+                        <span className={`inline-block px-2 py-1 text-xs rounded ${
+                          agendamento.status === 'AGENDADO' ? 'bg-blue-100 text-blue-800' :
+                          agendamento.status === 'CONFIRMADO' ? 'bg-green-100 text-green-800' :
+                          agendamento.status === 'CANCELADO' ? 'bg-red-100 text-red-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {agendamento.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2 text-right text-sm">
+                        {agendamento.status === 'AGENDADO' && (
+                          <button
+                            onClick={() => cancelarAgendamento(agendamento.id)}
+                            className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
+                          >
+                            Cancelar
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="px-4 py-4 text-center text-gray-400">
+                      Nenhum agendamento encontrado
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
