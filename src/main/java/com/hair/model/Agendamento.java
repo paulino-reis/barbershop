@@ -28,7 +28,7 @@ public class Agendamento {
     @JoinColumn(name = "servico_id", nullable = false)
     private Servico servico;
     
-    @Column(name = "data_marcao", nullable = false)
+    @Column(name = "data_marcacao", nullable = false)
     private LocalDateTime dataMarcacao;
     
     @Column(name = "data_agendamento", nullable = false)
@@ -43,6 +43,15 @@ public class Agendamento {
     
     @Enumerated(EnumType.STRING)
     private StatusAgendamento status;
+    
+    @Column(name = "canceled_by_user_id")
+    private Long canceledByUserId;
+    
+    @Column(name = "cancellation_date")
+    private LocalDateTime cancellationDate;
+    
+    @Transient
+    private String canceledByUserName;
     
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

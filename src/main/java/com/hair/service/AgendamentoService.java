@@ -83,7 +83,25 @@ public class AgendamentoService {
     }
     
     public List<Agendamento> buscarPorUsuario(String login) {
-        return agendamentoRepository.findByUsuarioLogin(login);
+        List<Agendamento> agendamentos = agendamentoRepository.findByUsuarioLogin(login);
+        agendamentos.forEach(ag -> {
+            if (ag.getCanceledByUserId() != null) {
+                usuarioService.buscarPorId(ag.getCanceledByUserId()).ifPresent(usuario -> ag.setCanceledByUserName(usuario.getNomeUsuario()));
+            }
+        });
+        return agendamentos;
+    }
+    
+    public List<Agendamento> buscarAgendamentosHoje() {
+        LocalDateTime hojeInicio = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime hojeFim = hojeInicio.plusDays(1);
+        return agendamentoRepository.findByDataAgendamentoBetween(hojeInicio, hojeFim);
+    }
+    
+    public List<Agendamento> buscarAgendamentosPorData(java.time.LocalDate data) {
+        LocalDateTime dataInicio = data.atStartOfDay();
+        LocalDateTime dataFim = dataInicio.plusDays(1);
+        return agendamentoRepository.findByDataAgendamentoBetween(dataInicio, dataFim);
     }
     
     public List<String> getHorariosDisponiveis(LocalDateTime data, Long profissionalId) {
@@ -150,11 +168,14 @@ public class AgendamentoService {
         return profissionalService.buscarDisponiveis(data, horario);
     }
     
-    public void cancelar(Long id) {
+    public void cancelar(Long id, Long userId) {
         Optional<Agendamento> agendamento = buscarPorId(id);
         if (agendamento.isPresent()) {
-            agendamento.get().setStatus(Agendamento.StatusAgendamento.CANCELADO);
-            agendamentoRepository.save(agendamento.get());
+            Agendamento ag = agendamento.get();
+            ag.setStatus(Agendamento.StatusAgendamento.CANCELADO);
+            ag.setCanceledByUserId(userId);
+            ag.setCancellationDate(LocalDateTime.now());
+            agendamentoRepository.save(ag);
         } else {
             throw new RuntimeException("Agendamento não encontrado com ID: " + id);
         }

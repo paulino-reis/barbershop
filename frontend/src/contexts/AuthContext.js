@@ -49,8 +49,9 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('userId', id);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
-      setUser({ id, login: username, nome: nomeUsuario, role });
-      return { success: true };
+      const userObj = { id, login: username, nome: nomeUsuario, role };
+      setUser(userObj);
+      return { success: true, user: userObj };
     } catch (error) {
       return { 
         success: false, 

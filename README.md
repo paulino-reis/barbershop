@@ -19,6 +19,8 @@ Um sistema completo de agendamento para barbearias desenvolvido com Java 21, Spr
 - **TailwindCSS** - Estilização
 - **Lucide React** - Ícones
 - **Axios** - Cliente HTTP
+- **Chart.js** - Gráficos de estatísticas
+- **react-chartjs-2** - Integração do Chart.js com React
 
 ## Funcionalidades
 
@@ -40,11 +42,24 @@ Um sistema completo de agendamento para barbearias desenvolvido com Java 21, Spr
 - Horários disponíveis (9h às 21h)
 - Filtros por profissional
 - Status de agendamento (agendado, confirmado, cancelado, concluído)
+- Confirmação automática com envio de mensagem via WhatsApp
+- Mensagem formatada com dados do agendamento (cliente, serviço, data, horário, profissional)
+- Texto em negrito nos campos importantes da mensagem WhatsApp
 
 ### Interface Responsiva
 - Design mobile-first
 - Layout adaptável para desktop e mobile
 - Interface moderna e intuitiva
+- Efeitos de hover aprimorados nos menus de navegação e abas
+
+### Estatísticas e Relatórios
+- Gráfico de pizza mostrando serviços por profissional
+- Filtro por período específico (intervalo de datas)
+- Filtro por mês específico
+- Exibição de quantidade de serviços no gráfico
+- Legenda interativa com efeitos de hover
+- Modal informativo quando não há dados disponíveis
+- Exclusão de agendamentos cancelados das estatísticas
 
 ## Estrutura do Projeto
 
@@ -136,6 +151,8 @@ O frontend estará disponível em `http://localhost:3000`
 - `POST /api/agendamentos` - Criar novo agendamento
 - `GET /api/agendamentos/horarios-disponiveis` - Horários disponíveis
 - `POST /api/agendamentos/{id}/cancelar` - Cancelar agendamento
+- `POST /api/agendamentos/{id}/confirmar` - Confirmar agendamento (envia WhatsApp)
+- `GET /api/agendamentos/estatisticas` - Estatísticas de serviços por profissional
 
 ### Usuários
 - `GET /api/usuarios/perfil` - Perfil do usuário
@@ -154,12 +171,16 @@ O frontend estará disponível em `http://localhost:3000`
 - [x] Filtros por profissional
 - [x] Histórico de agendamentos
 - [x] Cancelamento de agendamentos
+- [x] Confirmação de agendamentos com envio de WhatsApp
+- [x] Mensagem formatada com dados do agendamento
+- [x] Gráfico de estatísticas de serviços por profissional
+- [x] Filtro de estatísticas por período e mês
+- [x] Efeitos de hover aprimorados na interface
 
 ## Próximos Passos
 
-- [ ] Sistema de notificações (email/SMS)
+- [ ] Sistema de notificações por email
 - [ ] Integração com pagamento online
-- [ ] Relatórios e estatísticas
 - [ ] Sistema de avaliação de serviços
 - [ ] Upload de fotos dos profissionais
 - [ ] Recuperação de senha por email

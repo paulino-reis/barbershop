@@ -466,6 +466,7 @@ const Agendamento = () => {
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Profissional</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Data/Hora</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Status</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Cancelado por</th>
                       <th className="px-4 py-2 text-right text-xs font-medium text-gray-700 uppercase">Ações</th>
                     </tr>
                   </thead>
@@ -490,6 +491,9 @@ const Agendamento = () => {
                             }`}>
                               {agendamento.status}
                             </span>
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-600">
+                            {agendamento.canceledByUserName || '-'}
                           </td>
                           <td className="px-4 py-2 text-right text-sm">
                             {user?.role === 'ADMIN' && agendamento.status === 'AGENDADO' && (

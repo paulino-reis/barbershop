@@ -4,13 +4,16 @@ import com.hair.dto.EstatisticasProfissionalDTO;
 import com.hair.dto.HorarioOcupadoDTO;
 import com.hair.model.Agendamento;
 import com.hair.model.Profissional;
+import com.hair.model.Usuario;
 import com.hair.service.AgendamentoService;
+import com.hair.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -24,6 +27,7 @@ import java.util.Map;
 public class AgendamentoController {
     
     private final AgendamentoService agendamentoService;
+    private final UsuarioService usuarioService;
 
     @GetMapping("/horarios-disponiveis")
     public ResponseEntity<List<String>> getHorariosDisponiveis(
@@ -81,6 +85,19 @@ public class AgendamentoController {
         return ResponseEntity.ok(agendamentoService.getEstatisticasPorProfissional(inicio, fim));
     }
     
+    @GetMapping("/hoje")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Agendamento>> buscarAgendamentosHoje() {
+        return ResponseEntity.ok(agendamentoService.buscarAgendamentosHoje());
+    }
+    
+    @GetMapping("/por-data")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Agendamento>> buscarAgendamentosPorData(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.time.LocalDate data) {
+        return ResponseEntity.ok(agendamentoService.buscarAgendamentosPorData(data));
+    }
+    
     @PostMapping
     public ResponseEntity<Agendamento> salvar(@Valid @RequestBody Agendamento agendamento, 
                                              Authentication authentication) {
@@ -98,8 +115,11 @@ public class AgendamentoController {
     }
     
     @PostMapping("/{id}/cancelar")
-    public ResponseEntity<Void> cancelar(@PathVariable Long id) {
-        agendamentoService.cancelar(id);
+    public ResponseEntity<Void> cancelar(@PathVariable Long id, Authentication authentication) {
+        String login = authentication.getName();
+        Usuario usuario = usuarioService.buscarPorLogin(login)
+            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+        agendamentoService.cancelar(id, usuario.getId());
         return ResponseEntity.ok().build();
     }
     

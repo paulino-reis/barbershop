@@ -32,6 +32,12 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private String telefone;
     
+    @Column
+    private String email;
+    
+    @Column(name = "endereco")
+    private String endereco;
+    
     @Column(name = "data_servico")
     private LocalDateTime dataServico;
     

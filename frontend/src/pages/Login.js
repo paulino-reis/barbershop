@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Eye, EyeOff, Scissors } from 'lucide-react';
@@ -12,11 +12,20 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loginAttempted, setLoginAttempted] = useState(false);
   
   const { user, login } = useAuth();
 
-  if (user) {
-    return <Navigate to="/agendamento" />;
+  useEffect(() => {
+    if (loginAttempted && user) {
+      console.log('User after login:', user);
+      console.log('User role:', user.role);
+      navigate(user.role?.includes('ADMIN') ? '/agendamentos-hoje' : '/agendamento');
+    }
+  }, [loginAttempted, user, navigate]);
+
+  if (user && !loginAttempted) {
+    return <Navigate to={user.role?.includes('ADMIN') ? '/agendamentos-hoje' : '/agendamento'} />;
   }
 
   const handleChange = (e) => {
@@ -34,7 +43,7 @@ const Login = () => {
     const result = await login(formData);
     
     if (result.success) {
-      navigate('/agendamento');
+      navigate('/agendamentos-hoje');
     } else {
       setError(result.error);
     }

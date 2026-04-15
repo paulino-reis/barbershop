@@ -8,6 +8,8 @@ import ServicesSelection from './pages/ServicesSelection';
 import AppointmentBooking from './pages/AppointmentBooking';
 import Perfil from './pages/Perfil';
 import Administrativo from './pages/Administrativo';
+import AgendamentosHoje from './pages/AgendamentosHoje';
+import UsuarioManagement from './pages/UsuarioManagement';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -55,6 +57,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Administrativo />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/agendamentos-hoje" 
+              element={
+                <ProtectedRoute>
+                  <AgendamentosHoje />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/usuarios" 
+              element={
+                <ProtectedRoute>
+                  <UsuarioManagement />
                 </ProtectedRoute>
               } 
             />
