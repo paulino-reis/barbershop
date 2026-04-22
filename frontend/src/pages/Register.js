@@ -63,9 +63,23 @@ const Register = () => {
     <div 
       className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
       style={{
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)'
+        backgroundImage: 'url(https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1920&q=80)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        position: 'relative'
       }}
     >
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        zIndex: 0
+      }}></div>
+      <div style={{ position: 'relative', zIndex: 1 }}>
       <div className="max-w-md w-full space-y-8">
         <div>
           <Link to="/login" className="flex items-center text-gray-400 hover:text-white mb-4 transition-colors">
@@ -86,8 +100,9 @@ const Register = () => {
         <div 
           className="py-8 px-6 shadow-2xl rounded-2xl"
           style={{
-            background: 'rgba(30, 41, 59, 0.8)',
-            border: '1px solid rgba(71, 85, 105, 0.5)'
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)'
           }}
         >
           <form className="space-y-6" onSubmit={handleSubmit}>
@@ -226,6 +241,7 @@ const Register = () => {
             </div>
           </form>
         </div>
+      </div>
       </div>
     </div>
   );

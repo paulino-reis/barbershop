@@ -1,5 +1,9 @@
 package com.hair.service;
 
+import com.hair.dto.UsuarioDTO;
+import com.hair.exception.DuplicateResourceException;
+import com.hair.exception.InvalidCredentialsException;
+import com.hair.exception.UsuarioNotFoundException;
 import com.hair.model.Usuario;
 import com.hair.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -20,14 +25,51 @@ public class UsuarioService {
     
     public Usuario salvar(Usuario usuario) {
         if (usuarioRepository.existsByLogin(usuario.getLogin())) {
-            throw new RuntimeException("Login já existe: " + usuario.getLogin());
+            throw new DuplicateResourceException("Login", usuario.getLogin());
         }
-        
+
         if (usuarioRepository.existsByTelefone(usuario.getTelefone())) {
-            throw new RuntimeException("Telefone já cadastrado: " + usuario.getTelefone());
+            throw new DuplicateResourceException("Telefone", usuario.getTelefone());
         }
-        
-        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+
+        definirRoleParaPrimeiroUsuario(usuario);
+
+        //noinspection ConstantConditions
+        if (usuario.getSenha() == null || usuario.getSenha().isEmpty()) {
+            throw new IllegalArgumentException("Senha é obrigatória");
+        }
+
+        usuario.setSenha(Objects.requireNonNull(passwordEncoder.encode(usuario.getSenha())));
+        return usuarioRepository.save(usuario);
+    }
+    
+    public Usuario salvar(UsuarioDTO usuarioDTO) {
+        if (usuarioRepository.existsByLogin(usuarioDTO.getLogin())) {
+            throw new DuplicateResourceException("Login", usuarioDTO.getLogin());
+        }
+
+        if (usuarioRepository.existsByTelefone(usuarioDTO.getTelefone())) {
+            throw new DuplicateResourceException("Telefone", usuarioDTO.getTelefone());
+        }
+
+        if (usuarioDTO.getSenha() == null || usuarioDTO.getSenha().isEmpty()) {
+            throw new IllegalArgumentException("Senha é obrigatória");
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setNomeUsuario(usuarioDTO.getNomeUsuario());
+        usuario.setTelefone(usuarioDTO.getTelefone());
+        usuario.setEmail(usuarioDTO.getEmail());
+        usuario.setEndereco(usuarioDTO.getEndereco());
+        usuario.setValorPago(usuarioDTO.getValorPago());
+        usuario.setLogin(usuarioDTO.getLogin());
+        usuario.setSenha(usuarioDTO.getSenha());
+        usuario.setRole(usuarioDTO.getRole());
+        usuario.setAtivo(usuarioDTO.getAtivo());
+
+        definirRoleParaPrimeiroUsuario(usuario);
+
+        usuario.setSenha(Objects.requireNonNull(passwordEncoder.encode(usuario.getSenha())));
         return usuarioRepository.save(usuario);
     }
     
@@ -39,55 +81,77 @@ public class UsuarioService {
         return usuarioRepository.findByLoginAndAtivo(login);
     }
     
-    public Optional<Usuario> buscarPorTelefone(String telefone) {
-        return usuarioRepository.findByTelefone(telefone);
-    }
-    
     public List<Usuario> buscarTodos() {
         return usuarioRepository.findAll();
     }
     
     public Usuario atualizar(Long id, Usuario usuario) {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
-        if (usuarioExistente.isEmpty()) {
-            throw new RuntimeException("Usuário não encontrado com ID: " + id);
-        }
-        
-        Usuario usuarioAtual = usuarioExistente.get();
-        
-        if (!usuarioAtual.getLogin().equals(usuario.getLogin()) && 
-            usuarioRepository.existsByLogin(usuario.getLogin())) {
-            throw new RuntimeException("Login já existe: " + usuario.getLogin());
-        }
-        
-        if (!usuarioAtual.getTelefone().equals(usuario.getTelefone()) && 
-            usuarioRepository.existsByTelefone(usuario.getTelefone())) {
-            throw new RuntimeException("Telefone já cadastrado: " + usuario.getTelefone());
-        }
+        Usuario usuarioAtual = validarEObterUsuarioExistente(id, usuario.getLogin(), usuario.getTelefone());
         
         usuarioAtual.setNomeUsuario(usuario.getNomeUsuario());
         usuarioAtual.setTelefone(usuario.getTelefone());
         usuarioAtual.setLogin(usuario.getLogin());
         
+        //noinspection ConstantConditions
         if (usuario.getSenha() != null && !usuario.getSenha().isEmpty()) {
-            usuarioAtual.setSenha(passwordEncoder.encode(usuario.getSenha()));
+            usuarioAtual.setSenha(Objects.requireNonNull(passwordEncoder.encode(usuario.getSenha())));
         }
         
         return usuarioRepository.save(usuarioAtual);
     }
     
+    public Usuario atualizar(Long id, UsuarioDTO usuarioDTO) {
+        Usuario usuarioAtual = validarEObterUsuarioExistente(id, usuarioDTO.getLogin(), usuarioDTO.getTelefone());
+        
+        usuarioAtual.setNomeUsuario(usuarioDTO.getNomeUsuario());
+        usuarioAtual.setTelefone(usuarioDTO.getTelefone());
+        usuarioAtual.setEmail(usuarioDTO.getEmail());
+        usuarioAtual.setEndereco(usuarioDTO.getEndereco());
+        usuarioAtual.setValorPago(usuarioDTO.getValorPago());
+        usuarioAtual.setLogin(usuarioDTO.getLogin());
+        usuarioAtual.setRole(usuarioDTO.getRole());
+        usuarioAtual.setAtivo(usuarioDTO.getAtivo());
+        
+        if (usuarioDTO.getSenha() != null && !usuarioDTO.getSenha().isEmpty()) {
+            usuarioAtual.setSenha(Objects.requireNonNull(passwordEncoder.encode(usuarioDTO.getSenha())));
+        }
+        
+        return usuarioRepository.save(usuarioAtual);
+    }
+    
+    private Usuario validarEObterUsuarioExistente(Long id, String novoLogin, String novoTelefone) {
+        Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
+        if (usuarioExistente.isEmpty()) {
+            throw new UsuarioNotFoundException(id);
+        }
+        
+        Usuario usuarioAtual = usuarioExistente.get();
+        
+        if (!usuarioAtual.getLogin().equals(novoLogin) && 
+            usuarioRepository.existsByLogin(novoLogin)) {
+            throw new DuplicateResourceException("Login", novoLogin);
+        }
+        
+        if (!usuarioAtual.getTelefone().equals(novoTelefone) && 
+            usuarioRepository.existsByTelefone(novoTelefone)) {
+            throw new DuplicateResourceException("Telefone", novoTelefone);
+        }
+        
+        return usuarioAtual;
+    }
+    
     public void alterarSenha(String login, String senhaAtual, String novaSenha) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByLogin(login);
         if (usuarioOpt.isEmpty()) {
-            throw new RuntimeException("Usuário não encontrado: " + login);
+            throw new UsuarioNotFoundException(login);
         }
         
         Usuario usuario = usuarioOpt.get();
         if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
-            throw new RuntimeException("Senha atual incorreta");
+            throw new InvalidCredentialsException();
         }
         
-        usuario.setSenha(passwordEncoder.encode(novaSenha));
+        usuario.setSenha(Objects.requireNonNull(passwordEncoder.encode(novaSenha)));
         usuarioRepository.save(usuario);
     }
     
@@ -97,7 +161,7 @@ public class UsuarioService {
             usuario.get().setAtivo(false);
             usuarioRepository.save(usuario.get());
         } else {
-            throw new RuntimeException("Usuário não encontrado com ID: " + id);
+            throw new UsuarioNotFoundException(id);
         }
     }
     
@@ -107,7 +171,7 @@ public class UsuarioService {
             usuario.get().setAtivo(true);
             usuarioRepository.save(usuario.get());
         } else {
-            throw new RuntimeException("Usuário não encontrado com ID: " + id);
+            throw new UsuarioNotFoundException(id);
         }
     }
     
@@ -115,15 +179,14 @@ public class UsuarioService {
         if (usuarioRepository.existsById(id)) {
             usuarioRepository.deleteById(id);
         } else {
-            throw new RuntimeException("Usuário não encontrado com ID: " + id);
+            throw new UsuarioNotFoundException(id);
         }
     }
-    
-    public boolean existePorLogin(String login) {
-        return usuarioRepository.existsByLogin(login);
+
+    private void definirRoleParaPrimeiroUsuario(Usuario usuario) {
+        if (usuarioRepository.count() == 0) {
+            usuario.setRole("ADMIN");
+        }
     }
-    
-    public boolean existePorId(Long id) {
-        return usuarioRepository.existsById(id);
-    }
+
 }

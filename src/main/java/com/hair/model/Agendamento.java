@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDateTime;
 
@@ -37,13 +38,16 @@ public class Agendamento {
     @Column(name = "horario_agendado", nullable = false)
     private String horarioAgendado;
     
+    @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
     
     @Enumerated(EnumType.STRING)
+    @Nullable
     private StatusAgendamento status;
     
+    @Nullable
     @Column(name = "canceled_by_user_id")
     private Long canceledByUserId;
     

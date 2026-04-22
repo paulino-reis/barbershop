@@ -1,5 +1,6 @@
 package com.hair.controller;
 
+import com.hair.dto.UsuarioDTO;
 import com.hair.model.Usuario;
 import com.hair.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -10,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -27,15 +29,13 @@ public class UsuarioController {
     
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id, Authentication authentication) {
-        String login = authentication.getName();
         Usuario usuario = usuarioService.buscarPorId(id).orElse(null);
         
         if (usuario == null) {
             return ResponseEntity.notFound().build();
         }
         
-        if (!login.equals(usuario.getLogin()) && !authentication.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+        if (temAcesso(authentication, usuario.getLogin())) {
             return ResponseEntity.status(403).build();
         }
         
@@ -51,28 +51,26 @@ public class UsuarioController {
     }
     
     @PostMapping("/cadastrar")
-    public ResponseEntity<Usuario> cadastrar(@Valid @RequestBody Usuario usuario) {
-        return ResponseEntity.ok(usuarioService.salvar(usuario));
+    public ResponseEntity<Usuario> cadastrar(@Valid @RequestBody UsuarioDTO usuarioDTO) {
+        return ResponseEntity.ok(usuarioService.salvar(usuarioDTO));
     }
     
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> atualizar(
-            @PathVariable Long id, @Valid @RequestBody Usuario usuario, 
+            @PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDTO, 
             Authentication authentication) {
         
-        String login = authentication.getName();
         Usuario usuarioExistente = usuarioService.buscarPorId(id).orElse(null);
         
         if (usuarioExistente == null) {
             return ResponseEntity.notFound().build();
         }
         
-        if (!login.equals(usuarioExistente.getLogin()) && !authentication.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+        if (temAcesso(authentication, usuarioExistente.getLogin())) {
             return ResponseEntity.status(403).build();
         }
         
-        return ResponseEntity.ok(usuarioService.atualizar(id, usuario));
+        return ResponseEntity.ok(usuarioService.atualizar(id, usuarioDTO));
     }
     
     @PostMapping("/alterar-senha")
@@ -102,6 +100,13 @@ public class UsuarioController {
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         usuarioService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    private boolean temAcesso(Authentication authentication, String loginUsuario) {
+        String loginAutenticado = authentication.getName();
+        return !loginAutenticado.equals(loginUsuario) &&
+                authentication.getAuthorities().stream()
+                        .noneMatch(auth -> Objects.equals(auth.getAuthority(), "ROLE_ADMIN"));
     }
     
     public record AlterarSenhaRequest(String senhaAtual, String novaSenha) {}

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Calendar, Clock, User, Scissors, LogOut, Menu, X, Edit2, Trash2, Check } from 'lucide-react';
+import { Calendar, Clock, User, Scissors, Menu, X, Edit2, Trash2, Check } from 'lucide-react';
 import axios from 'axios';
 import Navigation from '../components/Navigation';
 
@@ -18,21 +18,9 @@ const Agendamento = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [editingAgendamento, setEditingAgendamento] = useState(null);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancelingId, setCancelingId] = useState(null);
   const [filtroStatus, setFiltroStatus] = useState('AGENDADO');
-
-  useEffect(() => {
-    carregarDadosIniciais();
-  }, []);
-
-  useEffect(() => {
-    if (selectedDate && selectedProfissional) {
-      carregarHorariosDisponiveis();
-      carregarHorariosOcupados();
-    }
-  }, [selectedDate, selectedProfissional]);
 
   const carregarDadosIniciais = async () => {
     try {
@@ -53,7 +41,7 @@ const Agendamento = () => {
     }
   };
 
-  const carregarHorariosDisponiveis = async () => {
+  const carregarHorariosDisponiveis = useCallback(async () => {
     try {
       const dataParam = selectedDate.toISOString();
       const profissionalId = selectedProfissional ? selectedProfissional : null;
@@ -67,9 +55,9 @@ const Agendamento = () => {
     } catch (error) {
       setMessage('Erro ao carregar horários disponíveis');
     }
-  };
+  }, [selectedDate, selectedProfissional]);
 
-  const carregarHorariosOcupados = async () => {
+  const carregarHorariosOcupados = useCallback(async () => {
     try {
       const dataParam = selectedDate.toISOString();
       const profissionalId = selectedProfissional ? selectedProfissional : null;
@@ -83,7 +71,18 @@ const Agendamento = () => {
     } catch (error) {
       setMessage('Erro ao carregar horários ocupados');
     }
-  };
+  }, [selectedDate, selectedProfissional]);
+
+  useEffect(() => {
+    carregarDadosIniciais();
+  }, []);
+
+  useEffect(() => {
+    if (selectedDate && selectedProfissional) {
+      carregarHorariosDisponiveis();
+      carregarHorariosOcupados();
+    }
+  }, [selectedDate, selectedProfissional, carregarHorariosDisponiveis, carregarHorariosOcupados]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -143,12 +142,7 @@ const Agendamento = () => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-  };
-
   const handleEdit = (agendamento) => {
-    setEditingAgendamento(agendamento);
     setSelectedDate(new Date(agendamento.dataAgendamento));
     setSelectedProfissional(agendamento.profissional?.id || '');
     setSelectedServico(agendamento.servico?.id || '');
@@ -209,9 +203,23 @@ const Agendamento = () => {
     <div 
       className="min-h-screen"
       style={{
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)'
+        backgroundImage: 'url(https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1920&q=80)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        position: 'relative'
       }}
     >
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        zIndex: 0
+      }}></div>
+      <div style={{ position: 'relative', zIndex: 1 }}>
       <Navigation />
       {/* Header */}
       <header 
@@ -225,7 +233,7 @@ const Agendamento = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Scissors className="h-8 w-8 text-primary-400 mr-3" />
-              <h1 className="text-xl font-semibold text-white">Barbearia</h1>
+              <h1 className="text-xl font-semibold text-white">Talison Barbearia</h1>
             </div>
             
             {/* Mobile menu button */}
@@ -262,8 +270,9 @@ const Agendamento = () => {
             <div 
               className="rounded-lg shadow-lg p-6"
               style={{
-                background: 'rgba(30, 41, 59, 0.8)',
-                border: '1px solid rgba(71, 85, 105, 0.5)'
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)'
               }}
             >
               <h2 className="text-2xl font-bold text-white mb-6">Novo Agendamento</h2>
@@ -289,9 +298,9 @@ const Agendamento = () => {
                     </label>
                     <input
                       type="date"
-                      value={selectedDate.toISOString().split('T')[0]}
-                      onChange={(e) => setSelectedDate(new Date(e.target.value))}
-                      min={new Date().toISOString().split('T')[0]}
+                      value={selectedDate.toLocaleDateString('en-CA')}
+                      onChange={(e) => setSelectedDate(new Date(e.target.value + 'T00:00:00'))}
+                      min={new Date().toLocaleDateString('en-CA')}
                       className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                       required
                     />
@@ -584,6 +593,7 @@ const Agendamento = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

@@ -4,7 +4,6 @@ import { AuthProvider } from './contexts/AuthContext';
 import LoginScreen from './pages/LoginScreen';
 import Register from './pages/Register';
 import Agendamento from './pages/Agendamento';
-import ServicesSelection from './pages/ServicesSelection';
 import AppointmentBooking from './pages/AppointmentBooking';
 import Perfil from './pages/Perfil';
 import Administrativo from './pages/Administrativo';
@@ -20,14 +19,6 @@ function App() {
           <Routes>
             <Route path="/login" element={<LoginScreen />} />
             <Route path="/register" element={<Register />} />
-            <Route 
-              path="/servicos" 
-              element={
-                <ProtectedRoute>
-                  <ServicesSelection />
-                </ProtectedRoute>
-              } 
-            />
             <Route 
               path="/agendamento" 
               element={
@@ -76,7 +67,7 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            <Route path="/" element={<Navigate to="/servicos" />} />
+            <Route path="/" element={<Navigate to="/agendamento" />} />
           </Routes>
         </div>
       </Router>

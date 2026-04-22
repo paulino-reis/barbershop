@@ -29,7 +29,7 @@ public class Profissional {
     @Column(name = "foto_url")
     private String foto;
     
-    @Column(name = "data_inicio_empresa", nullable = false)
+    @Column(name = "data_inicio_empresa")
     private LocalDateTime dataInicioEmpresa;
     
     @Column(nullable = false)

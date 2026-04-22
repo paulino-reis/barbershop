@@ -39,15 +39,15 @@ public class Usuario implements UserDetails {
     private String endereco;
     
     @Column(name = "data_servico")
-    private LocalDateTime dataServico;
+    private transient LocalDateTime dataServico;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "servico_id")
-    private Servico servico;
+    private transient Servico servico;
     
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "profissional_id")
-    private Profissional profissional;
+    private transient Profissional profissional;
     
     @Column(name = "valor_pago", precision = 10, scale = 2)
     private BigDecimal valorPago;
@@ -66,11 +66,11 @@ public class Usuario implements UserDetails {
     
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private transient LocalDateTime createdAt;
     
     @UpdateTimestamp
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private transient LocalDateTime updatedAt;
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

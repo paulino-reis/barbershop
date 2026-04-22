@@ -1,5 +1,6 @@
 package com.hair.controller;
 
+import com.hair.dto.ProfissionalDTO;
 import com.hair.model.Profissional;
 import com.hair.service.ProfissionalService;
 import jakarta.validation.Valid;
@@ -50,18 +51,17 @@ public class ProfissionalController {
     }
     
     @PostMapping
-    public ResponseEntity<Profissional> salvar(@Valid @RequestBody Profissional profissional) {
-        return ResponseEntity.ok(profissionalService.salvar(profissional));
+    public ResponseEntity<Profissional> salvar(@Valid @RequestBody ProfissionalDTO profissionalDTO) {
+        return ResponseEntity.ok(profissionalService.salvar(profissionalDTO));
     }
     
     @PutMapping("/{id}")
     public ResponseEntity<Profissional> atualizar(
-            @PathVariable Long id, @Valid @RequestBody Profissional profissional) {
+            @PathVariable Long id, @Valid @RequestBody ProfissionalDTO profissionalDTO) {
         if (!profissionalService.existePorId(id)) {
             return ResponseEntity.notFound().build();
         }
-        profissional.setId(id);
-        return ResponseEntity.ok(profissionalService.salvar(profissional));
+        return ResponseEntity.ok(profissionalService.atualizar(id, profissionalDTO));
     }
     
     @DeleteMapping("/{id}")

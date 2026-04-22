@@ -70,7 +70,7 @@ const Login = () => {
               <Scissors className="h-9 w-9 text-primary-600" />
             </div>
             <h2 className="mt-6 text-center text-4xl font-bold text-gray-900">
-              Barbearia
+              Talison Barbearia
             </h2>
             <p className="mt-2 text-center text-gray-600">
               Faça login na sua conta

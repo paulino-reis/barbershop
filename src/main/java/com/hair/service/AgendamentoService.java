@@ -1,12 +1,18 @@
 package com.hair.service;
 
+import com.hair.dto.AgendamentoDTO;
 import com.hair.dto.EstatisticasProfissionalDTO;
 import com.hair.dto.HorarioOcupadoDTO;
+import com.hair.exception.AgendamentoNotFoundException;
+import com.hair.exception.ProfissionalNotFoundException;
+import com.hair.exception.ServicoNotFoundException;
+import com.hair.exception.ValidationException;
 import com.hair.model.Agendamento;
 import com.hair.model.Profissional;
 import com.hair.model.Usuario;
 import com.hair.repository.AgendamentoRepository;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -33,20 +39,13 @@ public class AgendamentoService {
     private static final String HORA_ABERTURA = "09:00";
     private static final String HORA_FECHAMENTO = "21:00";
     
+    public Agendamento salvar(AgendamentoDTO agendamentoDTO, Authentication authentication) {
+        Agendamento agendamento = new Agendamento();
+        preencherAgendamentoFromDTO(agendamento, agendamentoDTO);
+        return salvar(agendamento, authentication);
+    }
+
     public Agendamento salvar(Agendamento agendamento, Authentication authentication) {
-        // Fetch full entities by IDs if only IDs are provided
-        if (agendamento.getProfissional() != null && agendamento.getProfissional().getId() != null && agendamento.getProfissional().getNome() == null) {
-            agendamento.setProfissional(profissionalService.buscarPorId(agendamento.getProfissional().getId()).orElseThrow(
-                () -> new RuntimeException("Profissional não encontrado com ID: " + agendamento.getProfissional().getId())
-            ));
-        }
-        
-        if (agendamento.getServico() != null && agendamento.getServico().getId() != null && agendamento.getServico().getNome() == null) {
-            agendamento.setServico(servicoService.buscarPorId(agendamento.getServico().getId()).orElseThrow(
-                () -> new RuntimeException("Serviço não encontrado com ID: " + agendamento.getServico().getId())
-            ));
-        }
-        
         // Associate authenticated user with the appointment
         if (authentication != null && authentication.isAuthenticated()) {
             String login = authentication.getName();
@@ -66,6 +65,16 @@ public class AgendamentoService {
     // Overloaded method for internal use without Authentication
     public Agendamento salvar(Agendamento agendamento) {
         return salvar(agendamento, null);
+    }
+    
+    public Agendamento atualizar(Long id, AgendamentoDTO agendamentoDTO) {
+        Agendamento agendamento = buscarPorId(id)
+            .orElseThrow(() -> new AgendamentoNotFoundException(id));
+        
+        preencherAgendamentoFromDTO(agendamento, agendamentoDTO);
+        
+        validarAgendamento(agendamento);
+        return agendamentoRepository.save(agendamento);
     }
     
     public Optional<Agendamento> buscarPorId(Long id) {
@@ -177,7 +186,7 @@ public class AgendamentoService {
             ag.setCancellationDate(LocalDateTime.now());
             agendamentoRepository.save(ag);
         } else {
-            throw new RuntimeException("Agendamento não encontrado com ID: " + id);
+            throw new AgendamentoNotFoundException(id);
         }
     }
     
@@ -191,56 +200,57 @@ public class AgendamentoService {
             // Generate WhatsApp link
             return gerarLinkWhatsApp(ag);
         } else {
-            throw new RuntimeException("Agendamento não encontrado com ID: " + id);
+            throw new AgendamentoNotFoundException(id);
         }
     }
     
     private String gerarLinkWhatsApp(Agendamento agendamento) {
-        if (agendamento.getUsuario() == null || agendamento.getUsuario().getTelefone() == null) {
+        Usuario usuario = agendamento.getUsuario();
+        if (usuario == null) {
             return null;
         }
         
         // Format phone number (remove non-numeric characters and add 55 for Brazil)
-        String telefone = agendamento.getUsuario().getTelefone().replaceAll("[^0-9]", "");
+        String telefone = agendamento.getUsuario().getTelefone().replaceAll("\\D", "");
         if (!telefone.startsWith("55")) {
             telefone = "55" + telefone;
         }
         
         // Format date and time
         String dataFormatada = agendamento.getDataAgendamento().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        String horario = agendamento.getHorarioAgendado();
-        String cliente = agendamento.getUsuario().getNomeUsuario() != null ? agendamento.getUsuario().getNomeUsuario() : "Cliente não informado";
-        String servico = agendamento.getServico() != null ? agendamento.getServico().getNome() : "Serviço não informado";
-        String profissional = agendamento.getProfissional() != null ? agendamento.getProfissional().getNome() : "Profissional não informado";
-        
-        // Create message
-        String mensagem = String.format(
-            "Cliente *%s* agendou o serviço *%s* para o dia *%s* às *%s* para o profissional *%s*.",
-            cliente, servico, dataFormatada, horario, profissional
-        );
-        
+        String mensagem = getMensagem(agendamento, dataFormatada);
+
         // Encode message for URL
         mensagem = java.net.URLEncoder.encode(mensagem, StandardCharsets.UTF_8);
 
         // Generate WhatsApp link
         return "https://wa.me/" + telefone + "?text=" + mensagem;
     }
-    
+
+    private static @NonNull String getMensagem(Agendamento agendamento, String dataFormatada) {
+        String horario = agendamento.getHorarioAgendado();
+        String cliente = agendamento.getUsuario() != null ? agendamento.getUsuario().getNomeUsuario() : "N/A";
+        String servico = agendamento.getServico().getNome();
+        String profissional = agendamento.getProfissional().getNome();
+
+        // Create message
+        return String.format(
+            "Cliente *%s* agendou o serviço *%s* para o dia *%s* às *%s* para o profissional *%s*.",
+            cliente, servico, dataFormatada, horario, profissional
+        );
+    }
+
     public void deletar(Long id) {
         if (agendamentoRepository.existsById(id)) {
             agendamentoRepository.deleteById(id);
         } else {
-            throw new RuntimeException("Agendamento não encontrado com ID: " + id);
+            throw new AgendamentoNotFoundException(id);
         }
     }
     
     private void validarAgendamento(Agendamento agendamento) {
-        if (agendamento.getProfissional() == null || agendamento.getServico() == null) {
-            throw new RuntimeException("Profissional e serviço são obrigatórios");
-        }
-        
         if (!isHorarioValido(agendamento.getHorarioAgendado())) {
-            throw new RuntimeException("Horário deve estar entre 09:00 e 21:00");
+            throw new ValidationException("Horário deve estar entre 09:00 e 21:00");
         }
         
         boolean existeConflito = agendamentoRepository.existsByProfissionalIdAndDataAgendamentoAndHorarioAgendado(
@@ -250,7 +260,7 @@ public class AgendamentoService {
         );
         
         if (existeConflito) {
-            throw new RuntimeException("Já existe um agendamento para este profissional neste horário");
+            throw new ValidationException("Já existe um agendamento para este profissional neste horário");
         }
     }
     
@@ -283,6 +293,19 @@ public class AgendamentoService {
         return horarios;
     }
 
+    private void preencherAgendamentoFromDTO(Agendamento agendamento, AgendamentoDTO agendamentoDTO) {
+        agendamento.setProfissional(profissionalService.buscarPorId(agendamentoDTO.getProfissionalId())
+            .orElseThrow(() -> new ProfissionalNotFoundException(agendamentoDTO.getProfissionalId())));
+        agendamento.setServico(servicoService.buscarPorId(agendamentoDTO.getServicoId())
+            .orElseThrow(() -> new ServicoNotFoundException(agendamentoDTO.getServicoId())));
+        agendamento.setDataAgendamento(agendamentoDTO.getDataAgendamento());
+        agendamento.setHorarioAgendado(agendamentoDTO.getHorarioAgendado());
+        
+        if (agendamentoDTO.getStatus() != null) {
+            agendamento.setStatus(Agendamento.StatusAgendamento.valueOf(agendamentoDTO.getStatus()));
+        }
+    }
+
     public List<EstatisticasProfissionalDTO> getEstatisticasPorProfissional(LocalDateTime dataInicio, LocalDateTime dataFim) {
         List<Agendamento> agendamentos = agendamentoRepository.findByDataAgendamentoBetween(dataInicio, dataFim);
         
@@ -295,6 +318,6 @@ public class AgendamentoService {
         
         return estatisticas.entrySet().stream()
             .map(entry -> new EstatisticasProfissionalDTO(entry.getKey(), entry.getValue()))
-            .collect(Collectors.toList());
+            .toList();
     }
 }

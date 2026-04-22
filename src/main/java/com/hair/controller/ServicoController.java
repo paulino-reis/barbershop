@@ -1,5 +1,6 @@
 package com.hair.controller;
 
+import com.hair.dto.ServicoDTO;
 import com.hair.model.Servico;
 import com.hair.service.ServicoService;
 import jakarta.validation.Valid;
@@ -45,19 +46,18 @@ public class ServicoController {
     
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Servico> salvar(@Valid @RequestBody Servico servico) {
-        return ResponseEntity.ok(servicoService.salvar(servico));
+    public ResponseEntity<Servico> salvar(@Valid @RequestBody ServicoDTO servicoDTO) {
+        return ResponseEntity.ok(servicoService.salvar(servicoDTO));
     }
     
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Servico> atualizar(
-            @PathVariable Long id, @Valid @RequestBody Servico servico) {
+            @PathVariable Long id, @Valid @RequestBody ServicoDTO servicoDTO) {
         if (!servicoService.existePorId(id)) {
             return ResponseEntity.notFound().build();
         }
-        servico.setId(id);
-        return ResponseEntity.ok(servicoService.salvar(servico));
+        return ResponseEntity.ok(servicoService.atualizar(id, servicoDTO));
     }
     
     @DeleteMapping("/{id}")

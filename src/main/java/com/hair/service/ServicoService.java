@@ -1,5 +1,7 @@
 package com.hair.service;
 
+import com.hair.dto.ServicoDTO;
+import com.hair.exception.ServicoNotFoundException;
 import com.hair.model.Servico;
 import com.hair.repository.ServicoRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,15 @@ public class ServicoService {
     private final ServicoRepository servicoRepository;
     
     public Servico salvar(Servico servico) {
+        servico.setDataUltimaAlteracao(LocalDateTime.now());
+        return servicoRepository.save(servico);
+    }
+    
+    public Servico salvar(ServicoDTO servicoDTO) {
+        Servico servico = new Servico();
+        servico.setIdServico(servicoDTO.getIdServico());
+        servico.setNome(servicoDTO.getNome());
+        servico.setPreco(servicoDTO.getPreco());
         servico.setDataUltimaAlteracao(LocalDateTime.now());
         return servicoRepository.save(servico);
     }
@@ -42,15 +53,23 @@ public class ServicoService {
         if (servicoRepository.existsById(id)) {
             servicoRepository.deleteById(id);
         } else {
-            throw new RuntimeException("Serviço não encontrado com ID: " + id);
+            throw new ServicoNotFoundException(id);
         }
     }
     
     public boolean existePorId(Long id) {
         return servicoRepository.existsById(id);
     }
-    
-    public boolean existePorIdServico(String idServico) {
-        return servicoRepository.existsByIdServico(idServico);
+
+    public Servico atualizar(Long id, ServicoDTO servicoDTO) {
+        Servico servico = buscarPorId(id)
+            .orElseThrow(() -> new ServicoNotFoundException(id));
+        
+        servico.setIdServico(servicoDTO.getIdServico());
+        servico.setNome(servicoDTO.getNome());
+        servico.setPreco(servicoDTO.getPreco());
+        servico.setDataUltimaAlteracao(LocalDateTime.now());
+        
+        return servicoRepository.save(servico);
     }
 }

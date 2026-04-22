@@ -1,5 +1,6 @@
 package com.hair.controller;
 
+import com.hair.dto.AgendamentoDTO;
 import com.hair.dto.EstatisticasProfissionalDTO;
 import com.hair.dto.HorarioOcupadoDTO;
 import com.hair.model.Agendamento;
@@ -99,19 +100,18 @@ public class AgendamentoController {
     }
     
     @PostMapping
-    public ResponseEntity<Agendamento> salvar(@Valid @RequestBody Agendamento agendamento, 
+    public ResponseEntity<Agendamento> salvar(@Valid @RequestBody AgendamentoDTO agendamentoDTO, 
                                              Authentication authentication) {
-        return ResponseEntity.ok(agendamentoService.salvar(agendamento, authentication));
+        return ResponseEntity.ok(agendamentoService.salvar(agendamentoDTO, authentication));
     }
     
     @PutMapping("/{id}")
     public ResponseEntity<Agendamento> atualizar(
-            @PathVariable Long id, @Valid @RequestBody Agendamento agendamento) {
+            @PathVariable Long id, @Valid @RequestBody AgendamentoDTO agendamentoDTO) {
         if (agendamentoService.buscarPorId(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        agendamento.setId(id);
-        return ResponseEntity.ok(agendamentoService.salvar(agendamento));
+        return ResponseEntity.ok(agendamentoService.atualizar(id, agendamentoDTO));
     }
     
     @PostMapping("/{id}/cancelar")

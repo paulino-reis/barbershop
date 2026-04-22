@@ -1,5 +1,7 @@
 package com.hair.service;
 
+import com.hair.dto.ProfissionalDTO;
+import com.hair.exception.ProfissionalNotFoundException;
 import com.hair.model.Profissional;
 import com.hair.repository.ProfissionalRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +19,23 @@ public class ProfissionalService {
     
     private final ProfissionalRepository profissionalRepository;
     
+    @SuppressWarnings("ConstantConditions")
     public Profissional salvar(Profissional profissional) {
         if (profissional.getDataInicioEmpresa() == null) {
             profissional.setDataInicioEmpresa(LocalDateTime.now());
         }
+        return profissionalRepository.save(profissional);
+    }
+    
+    public Profissional salvar(ProfissionalDTO profissionalDTO) {
+        Profissional profissional = new Profissional();
+        profissional.setNome(profissionalDTO.getNome());
+        profissional.setTelefone(profissionalDTO.getTelefone());
+        profissional.setFoto(profissionalDTO.getFoto());
+        profissional.setDataInicioEmpresa(profissionalDTO.getDataInicioEmpresa() != null
+            ? profissionalDTO.getDataInicioEmpresa()
+            : LocalDateTime.now());
+        copiarCamposDTOParaEntidade(profissionalDTO, profissional);
         return profissionalRepository.save(profissional);
     }
     
@@ -31,11 +46,7 @@ public class ProfissionalService {
     public List<Profissional> buscarTodos() {
         return profissionalRepository.findAll();
     }
-    
-    public Optional<Profissional> buscarPorTelefone(String telefone) {
-        return profissionalRepository.findByTelefone(telefone);
-    }
-    
+
     public List<Profissional> buscarPorNome(String nome) {
         return profissionalRepository.findByNomeContainingIgnoreCase(nome);
     }
@@ -52,11 +63,36 @@ public class ProfissionalService {
         if (profissionalRepository.existsById(id)) {
             profissionalRepository.deleteById(id);
         } else {
-            throw new RuntimeException("Profissional não encontrado com ID: " + id);
+            throw new ProfissionalNotFoundException(id);
         }
     }
     
     public boolean existePorId(Long id) {
         return profissionalRepository.existsById(id);
+    }
+    
+    public Profissional atualizar(Long id, ProfissionalDTO profissionalDTO) {
+        Profissional profissional = buscarPorId(id)
+            .orElseThrow(() -> new ProfissionalNotFoundException(id));
+
+        profissional.setNome(profissionalDTO.getNome());
+        profissional.setTelefone(profissionalDTO.getTelefone());
+        profissional.setFoto(profissionalDTO.getFoto());
+        profissional.setDataInicioEmpresa(profissionalDTO.getDataInicioEmpresa());
+        copiarCamposDTOParaEntidade(profissionalDTO, profissional);
+
+        return profissionalRepository.save(profissional);
+    }
+
+    private void copiarCamposDTOParaEntidade(ProfissionalDTO dto, Profissional profissional) {
+        profissional.setCep(dto.getCep());
+        profissional.setEndereco(dto.getEndereco());
+        profissional.setComplemento(dto.getComplemento());
+        profissional.setBairro(dto.getBairro());
+        profissional.setCidade(dto.getCidade());
+        profissional.setUf(dto.getUf());
+        profissional.setHoraInicio(dto.getHoraInicio());
+        profissional.setHoraFim(dto.getHoraFim());
+        profissional.setDiasDisponiveis(dto.getDiasDisponiveis());
     }
 }
