@@ -40,6 +40,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/", "/index.html", "/static/**", "/*.js", "/*.css", "/*.json", "/*.ico").permitAll()
                 .requestMatchers("/api/agendamentos/horarios-disponiveis", "/api/agendamentos/horarios-ocupados").permitAll()
                 .requestMatchers("/api/usuarios/cadastrar").permitAll()
                 .requestMatchers("/api/usuarios/perfil").permitAll()

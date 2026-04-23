@@ -111,9 +111,9 @@ const Agendamento = () => {
       }
 
       const agendamentoData = {
-        profissional: { id: profissionalId },
-        servico: { id: selectedServico },
-        dataAgendamento: selectedDate.toISOString(),
+        profissionalId: profissionalId,
+        servicoId: selectedServico,
+        dataAgendamento: selectedDate.toISOString().slice(0, 19),
         horarioAgendado: selectedHorario
       };
 
