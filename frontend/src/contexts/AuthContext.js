@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Configure axios to always use JSON and base URL
 axios.defaults.headers.common['Content-Type'] = 'application/json';
-axios.defaults.baseURL = 'http://localhost:8090';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
 const AuthContext = createContext();
 

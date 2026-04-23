@@ -25,7 +25,9 @@ public class Profissional {
     
     @Column(nullable = false)
     private String telefone;
-    
+
+    private String email;
+
     @Column(name = "foto_url")
     private String foto;
     

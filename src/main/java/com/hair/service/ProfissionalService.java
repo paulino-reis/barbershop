@@ -81,6 +81,7 @@ public class ProfissionalService {
     }
 
     private void copiarCamposDTOParaEntidade(ProfissionalDTO dto, Profissional profissional) {
+        profissional.setEmail(dto.getEmail());
         profissional.setCep(dto.getCep());
         profissional.setEndereco(dto.getEndereco());
         profissional.setComplemento(dto.getComplemento());
