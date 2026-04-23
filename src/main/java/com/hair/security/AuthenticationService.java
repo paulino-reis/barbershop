@@ -3,7 +3,6 @@ package com.hair.security;
 import com.hair.model.Usuario;
 import com.hair.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,11 +15,10 @@ public class AuthenticationService {
     
     private final UsuarioRepository usuarioRepository;
     private final JwtService jwtService;
-    private final ObjectProvider<AuthenticationManager> authenticationManagerProvider;
-    private final ObjectProvider<PasswordEncoder> passwordEncoderProvider;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
     
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        AuthenticationManager authenticationManager = authenticationManagerProvider.getObject();
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 request.login(),
@@ -43,11 +41,16 @@ public class AuthenticationService {
     }
     
     public AuthenticationResponse registrar(RegistroRequest request) {
+        if (request.senha().isBlank()) {
+            throw new IllegalArgumentException("Senha não pode ser vazia");
+        }
+        
         Usuario usuario = new Usuario();
         usuario.setNomeUsuario(request.nomeUsuario());
         usuario.setLogin(request.login());
-        usuario.setSenha(passwordEncoderProvider.getObject().encode(request.senha()));
+        usuario.setSenha(java.util.Objects.requireNonNull(passwordEncoder.encode(request.senha())));
         usuario.setTelefone(request.telefone());
+        usuario.setEmail(request.email());
         usuario.setRole("USER");
         
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
@@ -64,6 +67,6 @@ public class AuthenticationService {
     }
     
     public record AuthenticationRequest(String login, String senha) {}
-    public record AuthenticationResponse(String token, Long id, String login, String nome, String role) {}
-    public record RegistroRequest(String nomeUsuario, String login, String senha, String telefone) {}
+    public record AuthenticationResponse(String token, Long id, String login, String nomeUsuario, String role) {}
+    public record RegistroRequest(String nomeUsuario, String login, String senha, String telefone, String email) {}
 }

@@ -53,6 +53,9 @@ public class AgendamentoController {
     
     @GetMapping
     public ResponseEntity<List<Agendamento>> buscarTodos(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.ok(List.of());
+        }
         String login = authentication.getName();
         return ResponseEntity.ok(agendamentoService.buscarPorUsuario(login));
     }

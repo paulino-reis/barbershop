@@ -19,11 +19,7 @@ public class ProfissionalService {
     
     private final ProfissionalRepository profissionalRepository;
     
-    @SuppressWarnings("ConstantConditions")
     public Profissional salvar(Profissional profissional) {
-        if (profissional.getDataInicioEmpresa() == null) {
-            profissional.setDataInicioEmpresa(LocalDateTime.now());
-        }
         return profissionalRepository.save(profissional);
     }
     

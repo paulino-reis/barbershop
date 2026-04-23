@@ -211,7 +211,7 @@ public class AgendamentoService {
         }
         
         // Format phone number (remove non-numeric characters and add 55 for Brazil)
-        String telefone = agendamento.getUsuario().getTelefone().replaceAll("\\D", "");
+        String telefone = usuario.getTelefone().replaceAll("\\D", "");
         if (!telefone.startsWith("55")) {
             telefone = "55" + telefone;
         }
@@ -229,7 +229,8 @@ public class AgendamentoService {
 
     private static @NonNull String getMensagem(Agendamento agendamento, String dataFormatada) {
         String horario = agendamento.getHorarioAgendado();
-        String cliente = agendamento.getUsuario() != null ? agendamento.getUsuario().getNomeUsuario() : "N/A";
+        Usuario usuario = agendamento.getUsuario();
+        String cliente = usuario != null ? usuario.getNomeUsuario() : "N/A";
         String servico = agendamento.getServico().getNome();
         String profissional = agendamento.getProfissional().getNome();
 

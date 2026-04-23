@@ -24,20 +24,27 @@ const Agendamento = () => {
 
   const carregarDadosIniciais = async () => {
     try {
-      const [profissionaisRes, servicosRes, agendamentosRes] = await Promise.all([
+      const [profissionaisRes, servicosRes] = await Promise.all([
         axios.get('/api/profissionais'),
-        axios.get('/api/servicos'),
-        axios.get('/api/agendamentos')
+        axios.get('/api/servicos')
       ]);
 
       setProfissionais(profissionaisRes.data);
       setServicos(servicosRes.data);
+    } catch (error) {
+      setMessage('Erro ao carregar profissionais e serviços');
+    }
+
+    // Load agendamentos separately
+    try {
+      const agendamentosRes = await axios.get('/api/agendamentos');
       const agendamentosOrdenados = agendamentosRes.data.sort((a, b) => 
         new Date(a.dataAgendamento) - new Date(b.dataAgendamento)
       );
       setAgendamentos(agendamentosOrdenados);
     } catch (error) {
-      setMessage('Erro ao carregar dados');
+      // Don't show error for agendamentos - it might just be that user is not logged in
+      console.log('Não foi possível carregar agendamentos:', error.message);
     }
   };
 

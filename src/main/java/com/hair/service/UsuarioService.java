@@ -34,11 +34,6 @@ public class UsuarioService {
 
         definirRoleParaPrimeiroUsuario(usuario);
 
-        //noinspection ConstantConditions
-        if (usuario.getSenha() == null || usuario.getSenha().isEmpty()) {
-            throw new IllegalArgumentException("Senha é obrigatória");
-        }
-
         usuario.setSenha(Objects.requireNonNull(passwordEncoder.encode(usuario.getSenha())));
         return usuarioRepository.save(usuario);
     }
@@ -59,7 +54,7 @@ public class UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setNomeUsuario(usuarioDTO.getNomeUsuario());
         usuario.setTelefone(usuarioDTO.getTelefone());
-        usuario.setEmail(usuarioDTO.getEmail());
+        usuario.setEmail(usuarioDTO.getEmail() != null ? usuarioDTO.getEmail() : "");
         usuario.setEndereco(usuarioDTO.getEndereco());
         usuario.setValorPago(usuarioDTO.getValorPago());
         usuario.setLogin(usuarioDTO.getLogin());
@@ -91,12 +86,11 @@ public class UsuarioService {
         usuarioAtual.setNomeUsuario(usuario.getNomeUsuario());
         usuarioAtual.setTelefone(usuario.getTelefone());
         usuarioAtual.setLogin(usuario.getLogin());
-        
-        //noinspection ConstantConditions
-        if (usuario.getSenha() != null && !usuario.getSenha().isEmpty()) {
+
+        if (!usuario.getSenha().isEmpty()) {
             usuarioAtual.setSenha(Objects.requireNonNull(passwordEncoder.encode(usuario.getSenha())));
         }
-        
+
         return usuarioRepository.save(usuarioAtual);
     }
     

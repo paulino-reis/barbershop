@@ -32,14 +32,14 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private String telefone;
     
-    @Column
+    @Column(nullable = true)
     private String email;
     
     @Column(name = "endereco")
     private String endereco;
     
     @Column(name = "data_servico")
-    private transient LocalDateTime dataServico;
+    private LocalDateTime dataServico;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "servico_id")
@@ -66,11 +66,11 @@ public class Usuario implements UserDetails {
     
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private transient LocalDateTime createdAt;
+    private LocalDateTime createdAt;
     
     @UpdateTimestamp
     @Column(name = "updated_at")
-    private transient LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

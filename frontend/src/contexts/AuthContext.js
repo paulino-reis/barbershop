@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
-// Configure axios to always use JSON
+// Configure axios to always use JSON and base URL
 axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.baseURL = 'http://localhost:8090';
 
 const AuthContext = createContext();
 
@@ -41,21 +42,29 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
+      // Limpar header de Authorization antes de fazer login
+      delete axios.defaults.headers.common['Authorization'];
+
+      console.log('Attempting login with:', credentials.login);
       const response = await axios.post('/api/auth/login', credentials);
-      const { token, id, login: username, nome: nomeUsuario, role } = response.data;
-      
+      console.log('Login response:', response.data);
+      const { token, id, login: username, nomeUsuario, role } = response.data;
+
       localStorage.setItem('token', token);
       localStorage.setItem('userName', nomeUsuario);
       localStorage.setItem('userId', id);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
+
       const userObj = { id, login: username, nome: nomeUsuario, role };
+      console.log('Setting user object:', userObj);
       setUser(userObj);
       return { success: true, user: userObj };
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.message || 'Erro ao fazer login' 
+      console.error('Login error:', error);
+      console.error('Error response:', error.response);
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Erro ao fazer login'
       };
     }
   };
@@ -63,7 +72,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await axios.post('/api/auth/registrar', userData);
-      const { token, id, login: username, nome: nomeUsuario, role } = response.data;
+      const { token, id, login: username, nomeUsuario, role } = response.data;
       
       localStorage.setItem('token', token);
       localStorage.setItem('userName', nomeUsuario);

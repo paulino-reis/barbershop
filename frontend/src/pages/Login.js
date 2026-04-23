@@ -20,7 +20,10 @@ const Login = () => {
     if (loginAttempted && user) {
       console.log('User after login:', user);
       console.log('User role:', user.role);
-      navigate(user.role?.includes('ADMIN') ? '/agendamentos-hoje' : '/agendamento');
+      console.log('Role check for ADMIN:', user.role?.includes('ADMIN'));
+      const targetRoute = user.role?.includes('ADMIN') ? '/agendamentos-hoje' : '/agendamento';
+      console.log('Navigating to:', targetRoute);
+      navigate(targetRoute);
     }
   }, [loginAttempted, user, navigate]);
 
@@ -43,7 +46,7 @@ const Login = () => {
     const result = await login(formData);
     
     if (result.success) {
-      navigate('/agendamentos-hoje');
+      setLoginAttempted(true);
     } else {
       setError(result.error);
     }

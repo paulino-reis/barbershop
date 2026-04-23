@@ -9,7 +9,8 @@ const Register = () => {
     login: '',
     senha: '',
     confirmarSenha: '',
-    telefone: ''
+    telefone: '',
+    email: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -49,7 +50,8 @@ const Register = () => {
       nomeUsuario: formData.nomeUsuario,
       login: formData.login,
       senha: formData.senha,
-      telefone: formData.telefone
+      telefone: formData.telefone,
+      email: formData.email
     });
     
     if (!result.success) {
@@ -157,6 +159,21 @@ const Register = () => {
                   className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                   placeholder="(00) 00000-0000"
                   value={formData.telefone}
+                  onChange={handleChange}
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                  Email (opcional)
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  placeholder="seu@email.com"
+                  value={formData.email}
                   onChange={handleChange}
                 />
               </div>
