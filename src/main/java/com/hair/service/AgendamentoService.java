@@ -311,7 +311,7 @@ public class AgendamentoService {
         List<Agendamento> agendamentos = agendamentoRepository.findByDataAgendamentoBetween(dataInicio, dataFim);
         
         Map<String, Long> estatisticas = agendamentos.stream()
-            .filter(a -> a.getStatus() == Agendamento.StatusAgendamento.AGENDADO)
+            .filter(a -> a.getStatus() == Agendamento.StatusAgendamento.AGENDADO || a.getStatus() == Agendamento.StatusAgendamento.CONFIRMADO)
             .collect(Collectors.groupingBy(
                 a -> a.getProfissional().getNome(),
                 Collectors.counting()

@@ -18,11 +18,7 @@ const Login = () => {
 
   useEffect(() => {
     if (loginAttempted && user) {
-      console.log('User after login:', user);
-      console.log('User role:', user.role);
-      console.log('Role check for ADMIN:', user.role?.includes('ADMIN'));
       const targetRoute = user.role?.includes('ADMIN') ? '/agendamentos-hoje' : '/agendamento';
-      console.log('Navigating to:', targetRoute);
       navigate(targetRoute);
     }
   }, [loginAttempted, user, navigate]);

@@ -44,7 +44,6 @@ const Agendamento = () => {
       setAgendamentos(agendamentosOrdenados);
     } catch (error) {
       // Don't show error for agendamentos - it might just be that user is not logged in
-      console.log('Não foi possível carregar agendamentos:', error.message);
     }
   };
 
@@ -204,6 +203,14 @@ const Agendamento = () => {
       month: '2-digit',
       year: 'numeric'
     });
+  };
+
+  const isAgendamentoFuturo = (dataAgendamento, horarioAgendado) => {
+    const data = new Date(dataAgendamento);
+    const [hora, minuto] = horarioAgendado.split(':');
+    data.setHours(parseInt(hora), parseInt(minuto), 0, 0);
+    const agora = new Date();
+    return data >= agora;
   };
 
   return (
@@ -523,9 +530,9 @@ const Agendamento = () => {
                             )}
                             <button
                               onClick={() => handleEdit(agendamento)}
-                              disabled={agendamento.status === 'CANCELADO'}
+                              disabled={agendamento.status === 'CANCELADO' || !isAgendamentoFuturo(agendamento.dataAgendamento, agendamento.horarioAgendado)}
                               className={`p-1 rounded transition-all ${
-                                agendamento.status === 'CANCELADO'
+                                agendamento.status === 'CANCELADO' || !isAgendamentoFuturo(agendamento.dataAgendamento, agendamento.horarioAgendado)
                                   ? 'text-gray-400 cursor-not-allowed'
                                   : 'text-blue-600 hover:text-blue-900 hover:bg-blue-50'
                               }`}
@@ -535,9 +542,9 @@ const Agendamento = () => {
                             </button>
                             <button
                               onClick={() => handleCancel(agendamento.id)}
-                              disabled={agendamento.status === 'CANCELADO'}
+                              disabled={agendamento.status === 'CANCELADO' || !isAgendamentoFuturo(agendamento.dataAgendamento, agendamento.horarioAgendado)}
                               className={`p-1 rounded transition-all ${
-                                agendamento.status === 'CANCELADO'
+                                agendamento.status === 'CANCELADO' || !isAgendamentoFuturo(agendamento.dataAgendamento, agendamento.horarioAgendado)
                                   ? 'text-gray-400 cursor-not-allowed'
                                   : 'text-red-600 hover:text-red-900 hover:bg-red-50'
                               }`}
