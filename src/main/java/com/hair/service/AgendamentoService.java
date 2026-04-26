@@ -12,7 +12,6 @@ import com.hair.model.Profissional;
 import com.hair.model.Usuario;
 import com.hair.repository.AgendamentoRepository;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -56,10 +55,16 @@ public class AgendamentoService {
         
         validarAgendamento(agendamento);
         agendamento.setDataMarcacao(LocalDateTime.now());
-        if (agendamento.getStatus() == null) {
-            agendamento.setStatus(Agendamento.StatusAgendamento.AGENDADO);
-        }
-        return agendamentoRepository.save(agendamento);
+        
+        org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AgendamentoService.class);
+        log.info("AgendamentoService: Saving agendamento - profissionalId={}, dataAgendamento={}, horarioAgendado={}",
+            agendamento.getProfissional().getId(),
+            agendamento.getDataAgendamento(),
+            agendamento.getHorarioAgendado());
+        
+        Agendamento saved = agendamentoRepository.save(agendamento);
+        log.info("AgendamentoService: Saved agendamento with id={}", saved.getId());
+        return saved;
     }
     
     // Overloaded method for internal use without Authentication
@@ -94,6 +99,7 @@ public class AgendamentoService {
     public List<Agendamento> buscarPorUsuario(String login) {
         List<Agendamento> agendamentos = agendamentoRepository.findByUsuarioLogin(login);
         agendamentos.forEach(ag -> {
+            // canceledByUserId is null for non-cancelled appointments
             if (ag.getCanceledByUserId() != null) {
                 usuarioService.buscarPorId(ag.getCanceledByUserId()).ifPresent(usuario -> ag.setCanceledByUserName(usuario.getNomeUsuario()));
             }
@@ -126,7 +132,7 @@ public class AgendamentoService {
         }
         
         List<HorarioOcupadoDTO> horariosOcupados = agendamentosOcupados.stream()
-            .filter(a -> a.getUsuario() != null)
+            .filter(a -> a.getUsuario() != null) // usuario can be null when saved without authentication
             .map(a -> new HorarioOcupadoDTO(
                 a.getHorarioAgendado(),
                 a.getUsuario().getNomeUsuario(),
@@ -164,7 +170,7 @@ public class AgendamentoService {
         }
         
         return agendamentosOcupados.stream()
-            .filter(a -> a.getUsuario() != null)
+            .filter(a -> a.getUsuario() != null) // usuario can be null when saved without authentication
             .map(a -> new HorarioOcupadoDTO(
                 a.getHorarioAgendado(),
                 a.getUsuario().getNomeUsuario(),
@@ -227,7 +233,7 @@ public class AgendamentoService {
         return "https://wa.me/" + telefone + "?text=" + mensagem;
     }
 
-    private static @NonNull String getMensagem(Agendamento agendamento, String dataFormatada) {
+    private static String getMensagem(Agendamento agendamento, String dataFormatada) {
         String horario = agendamento.getHorarioAgendado();
         Usuario usuario = agendamento.getUsuario();
         String cliente = usuario != null ? usuario.getNomeUsuario() : "N/A";

@@ -3,7 +3,47 @@ import axios from 'axios';
 
 // Configure axios to always use JSON and base URL
 axios.defaults.headers.common['Content-Type'] = 'application/json';
-axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+
+// Dynamic API URL based on current domain
+const getApiBaseUrl = () => {
+  const hostname = window.location.hostname;
+  // If accessing via subdomain, use the same subdomain for API
+  if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+    return `http://${hostname}:8090`;
+  }
+  // Default to localhost for local development
+  return import.meta.env.VITE_API_URL || 'http://localhost:8090';
+};
+
+axios.defaults.baseURL = getApiBaseUrl();
+
+// Add interceptor to include token in all requests
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add interceptor to handle 401/403 errors
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userId');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 const AuthContext = createContext();
 
@@ -22,7 +62,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       // Verify token validity
       axios.get('/api/usuarios/perfil')
         .then(response => {
@@ -30,7 +69,7 @@ export const AuthProvider = ({ children }) => {
         })
         .catch(() => {
           localStorage.removeItem('token');
-          delete axios.defaults.headers.common['Authorization'];
+          setUser(null);
         })
         .finally(() => {
           setLoading(false);
@@ -42,16 +81,12 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      // Limpar header de Authorization antes de fazer login
-      delete axios.defaults.headers.common['Authorization'];
-
       const response = await axios.post('/api/auth/login', credentials);
       const { token, id, login: username, nomeUsuario, role } = response.data;
 
       localStorage.setItem('token', token);
       localStorage.setItem('userName', nomeUsuario);
       localStorage.setItem('userId', id);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
       const userObj = { id, login: username, nome: nomeUsuario, role };
       setUser(userObj);
@@ -72,7 +107,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', token);
       localStorage.setItem('userName', nomeUsuario);
       localStorage.setItem('userId', id);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
       setUser({ id, login: username, nome: nomeUsuario, role });
       return { success: true };
@@ -86,7 +120,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userId');
     setUser(null);
   };
 
