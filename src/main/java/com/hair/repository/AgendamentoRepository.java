@@ -14,7 +14,7 @@ import java.util.List;
 public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> {
     
     List<Agendamento> findByProfissionalOrderByDataAgendamento(Profissional profissional);
-    
+
     List<Agendamento> findByDataAgendamentoBetween(LocalDateTime inicio, LocalDateTime fim);
 
     @Query("SELECT a FROM Agendamento a WHERE " +

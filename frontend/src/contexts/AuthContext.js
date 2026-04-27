@@ -58,6 +58,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentHostname, setCurrentHostname] = useState(window.location.hostname);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -78,6 +79,30 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   }, []);
+
+  // Monitor hostname changes to detect tenant slug changes
+  useEffect(() => {
+    const handleHostnameChange = () => {
+      const newHostname = window.location.hostname;
+      if (newHostname !== currentHostname) {
+        // Slug changed, logout and redirect to login
+        console.log('Hostname changed from', currentHostname, 'to', newHostname);
+        localStorage.removeItem('token');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userId');
+        setUser(null);
+        setCurrentHostname(newHostname);
+        window.location.href = '/login';
+      }
+    };
+
+    // Check on visibility change (when user switches tabs/windows)
+    document.addEventListener('visibilitychange', handleHostnameChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleHostnameChange);
+    };
+  }, [currentHostname]);
 
   const login = async (credentials) => {
     try {

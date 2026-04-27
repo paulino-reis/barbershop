@@ -15,12 +15,12 @@ const Agendamento = () => {
   const [horariosDisponiveis, setHorariosDisponiveis] = useState([]);
   const [horariosOcupados, setHorariosOcupados] = useState([]);
   const [agendamentos, setAgendamentos] = useState([]);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancelingId, setCancelingId] = useState(null);
   const [filtroStatus, setFiltroStatus] = useState('AGENDADO');
+  const [enviarWhatsApp, setEnviarWhatsApp] = useState(false);
 
   const carregarDadosIniciais = async () => {
     try {
@@ -133,14 +133,6 @@ const Agendamento = () => {
       );
       setAgendamentos(agendamentosOrdenados);
       
-      // Confirmar agendamento e abrir WhatsApp
-      if (response.data.id) {
-        const confirmResponse = await axios.post(`/api/agendamentos/${response.data.id}/confirmar`);
-        if (confirmResponse.data.whatsappLink) {
-          window.open(confirmResponse.data.whatsappLink, '_blank');
-        }
-      }
-      
     } catch (error) {
       setMessage(error.response?.data?.message || 'Erro ao realizar agendamento');
     } finally {
@@ -187,8 +179,8 @@ const Agendamento = () => {
         new Date(a.dataAgendamento) - new Date(b.dataAgendamento)
       );
       setAgendamentos(agendamentosOrdenados);
-      // Open WhatsApp link if available
-      if (response.data.whatsappLink) {
+      // Open WhatsApp link if available and checkbox is checked
+      if (enviarWhatsApp && response.data.whatsappLink) {
         window.open(response.data.whatsappLink, '_blank');
       }
     } catch (error) {
@@ -235,48 +227,6 @@ const Agendamento = () => {
       }}></div>
       <div style={{ position: 'relative', zIndex: 1 }}>
       <Navigation />
-      {/* Header */}
-      <header 
-        className="shadow-sm border-b"
-        style={{
-          background: 'rgba(30, 41, 59, 0.8)',
-          borderBottomColor: 'rgba(71, 85, 105, 0.5)'
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Scissors className="h-8 w-8 text-primary-400 mr-3" />
-              <h1 className="text-xl font-semibold text-white">Talison Barbearia</h1>
-            </div>
-            
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setShowMobileMenu(!showMobileMenu)}
-                className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-slate-700 transition-colors"
-              >
-                {showMobileMenu ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </div>
-
-            {/* Desktop menu */}
-            <div className="hidden md:flex items-center space-x-4">
-              <span className="text-gray-300">Bem-vindo, {user?.login}</span>
-            </div>
-          </div>
-
-          {/* Mobile menu */}
-          {showMobileMenu && (
-            <div className="md:hidden py-4 border-t" style={{borderTopColor: 'rgba(71, 85, 105, 0.5)'}}>
-              <div className="flex flex-col space-y-2">
-                <span className="text-gray-300 px-3 py-2">Bem-vindo, {user?.login}</span>
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 gap-8">
           {/* Formulário de Agendamento */}
@@ -303,9 +253,9 @@ const Agendamento = () => {
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Calendário, Profissional e Serviço */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                   {/* Calendário */}
-                  <div>
+                  <div className="w-full sm:w-auto">
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       <Calendar className="inline h-4 w-4 mr-1" />
                       Data do Agendamento
@@ -315,13 +265,13 @@ const Agendamento = () => {
                       value={selectedDate.toLocaleDateString('en-CA')}
                       onChange={(e) => setSelectedDate(new Date(e.target.value + 'T00:00:00'))}
                       min={new Date().toLocaleDateString('en-CA')}
-                      className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                      className="w-full sm:w-48 px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                       required
                     />
                   </div>
 
                   {/* Profissional */}
-                  <div>
+                  <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       <User className="inline h-4 w-4 mr-1" />
                       Profissional
@@ -342,24 +292,37 @@ const Agendamento = () => {
                   </div>
 
                   {/* Serviço */}
-                  <div>
+                  <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       <Scissors className="inline h-4 w-4 mr-1" />
                       Serviço
                     </label>
-                    <select
-                      value={selectedServico}
-                      onChange={(e) => setSelectedServico(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-                      required
-                    >
-                      <option value="">Selecione um serviço</option>
-                      {servicos.map(servico => (
-                        <option key={servico.id} value={servico.id}>
-                          {servico.nome} - R$ {servico.preco.toFixed(2)}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="flex gap-2">
+                      <select
+                        value={selectedServico}
+                        onChange={(e) => setSelectedServico(e.target.value)}
+                        className="flex-1 px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                        required
+                      >
+                        <option value="">Selecione um serviço</option>
+                        {servicos.map(servico => (
+                          <option key={servico.id} value={servico.id}>
+                            {servico.nome} - R$ {servico.preco.toFixed(2)}
+                          </option>
+                        ))}
+                      </select>
+                      <label className="flex items-center gap-2 cursor-pointer bg-slate-800/50 px-3 py-2 rounded-lg border border-slate-600 hover:bg-slate-700/50 transition-colors" title="Envia Whatsapp de confirmação de agendamento">
+                        <input
+                          type="checkbox"
+                          id="enviarWhatsApp"
+                          checked={enviarWhatsApp}
+                          onChange={(e) => setEnviarWhatsApp(e.target.checked)}
+                          className="w-4 h-4 text-primary-600 bg-slate-700 border-slate-600 rounded focus:ring-primary-500 focus:ring-2 cursor-pointer"
+                          title="Envia Whatsapp de confirmação de agendamento"
+                        />
+                        <span className="text-sm text-gray-300">Enviar WhatsApp</span>
+                      </label>
+                    </div>
                   </div>
                 </div>
 
@@ -404,13 +367,15 @@ const Agendamento = () => {
                   </div>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-3 px-4 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 transition-all transform hover:scale-[1.02] disabled:transform-none shadow-lg"
-                >
-                  {loading ? 'Agendando...' : 'Confirmar Agendamento'}
-                </button>
+                <div className="mt-6">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 transition-all transform hover:scale-[1.02] disabled:transform-none shadow-lg"
+                  >
+                    {loading ? 'Agendando...' : 'Confirmar Agendamento'}
+                  </button>
+                </div>
               </form>
             </div>
           </div>

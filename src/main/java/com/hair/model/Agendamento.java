@@ -30,9 +30,6 @@ public class Agendamento extends BaseEntity {
     @JoinColumn(name = "servico_id", nullable = false)
     private Servico servico;
 
-    @Column(name = "data_marcacao", nullable = false)
-    private LocalDateTime dataMarcacao;
-
     @Column(name = "data_agendamento", nullable = false)
     private LocalDateTime dataAgendamento;
 

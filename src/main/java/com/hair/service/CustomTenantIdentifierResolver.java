@@ -5,9 +5,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CustomTenantIdentifierResolver implements CurrentTenantIdentifierResolver<Integer> {
+    private static final Integer DEFAULT_TENANT = 4;
+
     @Override
     public Integer resolveCurrentTenantIdentifier() {
-        return TenantContext.getCurrentTenantId();
+        Integer tenantId = TenantContext.getCurrentTenantId();
+        return tenantId != null ? tenantId : DEFAULT_TENANT;
     }
 
     @Override

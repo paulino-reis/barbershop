@@ -54,7 +54,6 @@ public class AgendamentoService {
         }
         
         validarAgendamento(agendamento);
-        agendamento.setDataMarcacao(LocalDateTime.now());
         
         org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AgendamentoService.class);
         log.info("AgendamentoService: Saving agendamento - profissionalId={}, dataAgendamento={}, horarioAgendado={}",
