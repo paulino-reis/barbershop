@@ -54,21 +54,11 @@ public class AgendamentoService {
         }
         
         // Set valorCobrado from servico price
-        if (agendamento.getServico() != null && agendamento.getServico().getPreco() != null) {
-            agendamento.setValorCobrado(agendamento.getServico().getPreco());
-        }
-        
+        agendamento.setValorCobrado(agendamento.getServico().getPreco());
+
         validarAgendamento(agendamento);
-        
-        org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AgendamentoService.class);
-        log.info("AgendamentoService: Saving agendamento - profissionalId={}, dataAgendamento={}, horarioAgendado={}",
-            agendamento.getProfissional().getId(),
-            agendamento.getDataAgendamento(),
-            agendamento.getHorarioAgendado());
-        
-        Agendamento saved = agendamentoRepository.save(agendamento);
-        log.info("AgendamentoService: Saved agendamento with id={}, valorCobrado={}", saved.getId(), saved.getValorCobrado());
-        return saved;
+
+        return agendamentoRepository.save(agendamento);
     }
     
     // Overloaded method for internal use without Authentication
@@ -109,13 +99,13 @@ public class AgendamentoService {
     }
     
     public List<Agendamento> buscarPorUsuario(String login) {
-        List<Agendamento> agendamentos = agendamentoRepository.findByUsuarioLogin(login);
-        agendamentos.forEach(ag -> {
-            // canceledByUserId is null for non-cancelled appointments
-            if (ag.getCanceledByUserId() != null) {
-                usuarioService.buscarPorId(ag.getCanceledByUserId()).ifPresent(usuario -> ag.setCanceledByUserName(usuario.getNomeUsuario()));
-            }
-        });
+        Integer tenantId = TenantContext.getCurrentTenantId();
+        List<Agendamento> agendamentos = agendamentoRepository.findByUsuarioLogin(login, tenantId);
+        agendamentos.forEach(ag ->
+            Optional.ofNullable(ag.getCanceledByUserId())
+                .flatMap(usuarioService::buscarPorId)
+                .ifPresent(usuario -> ag.setCanceledByUserName(usuario.getNomeUsuario()))
+        );
         return agendamentos;
     }
     
@@ -134,13 +124,14 @@ public class AgendamentoService {
     public List<String> getHorariosDisponiveis(LocalDateTime data, Long profissionalId) {
         LocalDateTime dataInicio = data.toLocalDate().atStartOfDay();
         LocalDateTime dataFim = dataInicio.plusDays(1);
+        Integer tenantId = TenantContext.getCurrentTenantId();
         
         List<Agendamento> agendamentosOcupados;
         
         if (profissionalId != null) {
-            agendamentosOcupados = agendamentoRepository.findHorariosOcupadosByProfissionalAndData(profissionalId, dataInicio, dataFim);
+            agendamentosOcupados = agendamentoRepository.findHorariosOcupadosByProfissionalAndData(profissionalId, dataInicio, dataFim, tenantId);
         } else {
-            agendamentosOcupados = agendamentoRepository.findHorariosOcupadosByData(dataInicio, dataFim);
+            agendamentosOcupados = agendamentoRepository.findHorariosOcupadosByData(dataInicio, dataFim, tenantId);
         }
         
         List<HorarioOcupadoDTO> horariosOcupados = agendamentosOcupados.stream()
@@ -173,12 +164,13 @@ public class AgendamentoService {
     public List<HorarioOcupadoDTO> getHorariosOcupados(LocalDateTime data, Long profissionalId) {
         LocalDateTime dataInicio = data.toLocalDate().atStartOfDay();
         LocalDateTime dataFim = dataInicio.plusDays(1);
+        Integer tenantId = TenantContext.getCurrentTenantId();
         
         List<Agendamento> agendamentosOcupados;
         if (profissionalId != null) {
-            agendamentosOcupados = agendamentoRepository.findHorariosOcupadosByProfissionalAndData(profissionalId, dataInicio, dataFim);
+            agendamentosOcupados = agendamentoRepository.findHorariosOcupadosByProfissionalAndData(profissionalId, dataInicio, dataFim, tenantId);
         } else {
-            agendamentosOcupados = agendamentoRepository.findHorariosOcupadosByData(dataInicio, dataFim);
+            agendamentosOcupados = agendamentoRepository.findHorariosOcupadosByData(dataInicio, dataFim, tenantId);
         }
         
         return agendamentosOcupados.stream()

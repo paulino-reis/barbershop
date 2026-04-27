@@ -19,19 +19,21 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     @Query("SELECT a FROM Agendamento a WHERE " +
            "a.profissional.id = :profissionalId AND a.dataAgendamento >= :dataInicio AND a.dataAgendamento < :dataFim " +
-           "AND a.status != 'CANCELADO'")
+           "AND a.status != 'CANCELADO' AND a.tenantId = :tenantId")
     List<Agendamento> findHorariosOcupadosByProfissionalAndData(@Param("profissionalId") Long profissionalId,
                                                            @Param("dataInicio") LocalDateTime dataInicio,
-                                                           @Param("dataFim") LocalDateTime dataFim);
+                                                           @Param("dataFim") LocalDateTime dataFim,
+                                                           @Param("tenantId") Integer tenantId);
     
     @Query("SELECT a FROM Agendamento a WHERE " +
-           "a.dataAgendamento >= :dataInicio AND a.dataAgendamento < :dataFim AND a.status != 'CANCELADO'")
+           "a.dataAgendamento >= :dataInicio AND a.dataAgendamento < :dataFim AND a.status != 'CANCELADO' AND a.tenantId = :tenantId")
     List<Agendamento> findHorariosOcupadosByData(@Param("dataInicio") LocalDateTime dataInicio,
-                                              @Param("dataFim") LocalDateTime dataFim);
+                                              @Param("dataFim") LocalDateTime dataFim,
+                                              @Param("tenantId") Integer tenantId);
     
-    @Query("SELECT a FROM Agendamento a WHERE a.usuario.login = :login " +
+    @Query("SELECT a FROM Agendamento a WHERE a.usuario.login = :login AND a.tenantId = :tenantId " +
            "ORDER BY a.dataAgendamento DESC")
-    List<Agendamento> findByUsuarioLogin(@Param("login") String login);
+    List<Agendamento> findByUsuarioLogin(@Param("login") String login, @Param("tenantId") Integer tenantId);
     
     boolean existsByProfissionalIdAndDataAgendamentoAndHorarioAgendado(Long profissionalId, 
                                                                       LocalDateTime data, 

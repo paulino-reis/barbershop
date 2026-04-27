@@ -86,7 +86,6 @@ export const AuthProvider = ({ children }) => {
       const newHostname = window.location.hostname;
       if (newHostname !== currentHostname) {
         // Slug changed, logout and redirect to login
-        console.log('Hostname changed from', currentHostname, 'to', newHostname);
         localStorage.removeItem('token');
         localStorage.removeItem('userName');
         localStorage.removeItem('userId');

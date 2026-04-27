@@ -123,20 +123,11 @@ public class AgendamentoController {
     @PostMapping
     public ResponseEntity<Agendamento> salvar(@Valid @RequestBody AgendamentoDTO agendamentoDTO, 
                                              Authentication authentication) {
-        org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AgendamentoController.class);
-        log.info("AgendamentoController: Received save request - profissionalId={}, servicoId={}, dataAgendamento={}, horarioAgendado={}",
-            agendamentoDTO.getProfissionalId(),
-            agendamentoDTO.getServicoId(),
-            agendamentoDTO.getDataAgendamento(),
-            agendamentoDTO.getHorarioAgendado());
-        
         try {
             Agendamento saved = agendamentoService.salvar(agendamentoDTO, authentication);
-            log.info("AgendamentoController: Saved agendamento with id={}", saved.getId());
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
-            log.error("AgendamentoController: Error saving agendamento", e);
-            throw e;
+            return ResponseEntity.internalServerError().build();
         }
     }
     
