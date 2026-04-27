@@ -21,7 +21,7 @@ public class TenantAspect {
 
     @Before("execution(* com.hair.service.*.*(..)) && !within(TenantAspect) && !within(TenantService)")
     public void beforeExecution() {
-        if (isExecuting.get()) {
+        if (Boolean.TRUE.equals(isExecuting.get())) {
             return;
         }
 
@@ -37,7 +37,7 @@ public class TenantAspect {
                 }
             }
         } finally {
-            isExecuting.set(false);
+            isExecuting.remove();
         }
     }
 }
