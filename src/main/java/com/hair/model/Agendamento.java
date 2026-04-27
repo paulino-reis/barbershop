@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -43,6 +44,9 @@ public class Agendamento extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private StatusAgendamento status = StatusAgendamento.AGENDADO;
 
+    @Column(name = "valor_cobrado", precision = 10, scale = 2)
+    private BigDecimal valorCobrado;
+
     @Column(name = "canceled_by_user_id")
     private Long canceledByUserId;
     
@@ -61,6 +65,6 @@ public class Agendamento extends BaseEntity {
     private LocalDateTime updatedAt;
     
     public enum StatusAgendamento {
-        AGENDADO, CONFIRMADO, CANCELADO, CONCLUIDO
+        AGENDADO, CANCELADO
     }
 }

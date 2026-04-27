@@ -169,24 +169,6 @@ const Agendamento = () => {
     }
   };
 
-  const handleConfirm = async (id) => {
-    try {
-      const response = await axios.post(`/api/agendamentos/${id}/confirmar`);
-      setMessage('Agendamento confirmado com sucesso!');
-      // Recarregar agendamentos
-      const agendamentosRes = await axios.get('/api/agendamentos');
-      const agendamentosOrdenados = agendamentosRes.data.sort((a, b) => 
-        new Date(a.dataAgendamento) - new Date(b.dataAgendamento)
-      );
-      setAgendamentos(agendamentosOrdenados);
-      // Open WhatsApp link if available and checkbox is checked
-      if (enviarWhatsApp && response.data.whatsappLink) {
-        window.open(response.data.whatsappLink, '_blank');
-      }
-    } catch (error) {
-      setMessage(error.response?.data?.message || 'Erro ao confirmar agendamento');
-    }
-  };
 
   const formatarData = (dataString) => {
     const data = new Date(dataString);
@@ -413,17 +395,6 @@ const Agendamento = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setFiltroStatus('CONFIRMADO')}
-                    className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                      filtroStatus === 'CONFIRMADO'
-                        ? 'bg-green-600 text-white'
-                        : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                    }`}
-                  >
-                    Confirmado
-                  </button>
-                  <button
-                    type="button"
                     onClick={() => setFiltroStatus('CANCELADO')}
                     className={`px-3 py-1 text-sm rounded-full transition-colors ${
                       filtroStatus === 'CANCELADO'
@@ -432,17 +403,6 @@ const Agendamento = () => {
                     }`}
                   >
                     Cancelado
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFiltroStatus('CONCLUIDO')}
-                    className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                      filtroStatus === 'CONCLUIDO'
-                        ? 'bg-purple-600 text-white'
-                        : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                    }`}
-                  >
-                    Concluído
                   </button>
                 </div>
               </div>
@@ -473,7 +433,6 @@ const Agendamento = () => {
                           <td className="px-4 py-2 text-sm">
                             <span className={`inline-block px-2 py-1 text-xs rounded ${
                               agendamento.status === 'AGENDADO' ? 'bg-blue-100 text-blue-800' :
-                              agendamento.status === 'CONFIRMADO' ? 'bg-green-100 text-green-800' :
                               agendamento.status === 'CANCELADO' ? 'bg-red-100 text-red-800' :
                               'bg-gray-100 text-gray-800'
                             }`}>
@@ -484,15 +443,6 @@ const Agendamento = () => {
                             {agendamento.canceledByUserName || '-'}
                           </td>
                           <td className="px-4 py-2 text-right text-sm">
-                            {user?.role === 'ADMIN' && agendamento.status === 'AGENDADO' && (
-                              <button
-                                onClick={() => handleConfirm(agendamento.id)}
-                                className="p-1 rounded transition-all text-green-600 hover:text-green-900 hover:bg-green-50 mr-1"
-                                title="Confirmar"
-                              >
-                                <Check className="h-4 w-4" />
-                              </button>
-                            )}
                             <button
                               onClick={() => handleEdit(agendamento)}
                               disabled={agendamento.status === 'CANCELADO' || !isAgendamentoFuturo(agendamento.dataAgendamento, agendamento.horarioAgendado)}

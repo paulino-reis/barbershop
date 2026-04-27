@@ -3,6 +3,7 @@ package com.hair.service;
 import com.hair.dto.AgendamentoDTO;
 import com.hair.dto.EstatisticasProfissionalDTO;
 import com.hair.dto.HorarioOcupadoDTO;
+import com.hair.dto.RelatorioFinanceiroDTO;
 import com.hair.exception.AgendamentoNotFoundException;
 import com.hair.exception.ProfissionalNotFoundException;
 import com.hair.exception.ServicoNotFoundException;
@@ -17,7 +18,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +53,11 @@ public class AgendamentoService {
             agendamento.setUsuario(usuario);
         }
         
+        // Set valorCobrado from servico price
+        if (agendamento.getServico() != null && agendamento.getServico().getPreco() != null) {
+            agendamento.setValorCobrado(agendamento.getServico().getPreco());
+        }
+        
         validarAgendamento(agendamento);
         
         org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AgendamentoService.class);
@@ -62,7 +67,7 @@ public class AgendamentoService {
             agendamento.getHorarioAgendado());
         
         Agendamento saved = agendamentoRepository.save(agendamento);
-        log.info("AgendamentoService: Saved agendamento with id={}", saved.getId());
+        log.info("AgendamentoService: Saved agendamento with id={}, valorCobrado={}", saved.getId(), saved.getValorCobrado());
         return saved;
     }
     
@@ -89,6 +94,14 @@ public class AgendamentoService {
         Optional<Profissional> profissional = profissionalService.buscarPorId(profissionalId);
         return profissional.map(agendamentoRepository::findByProfissionalOrderByDataAgendamento)
                            .orElse(new ArrayList<>());
+    }
+
+    public List<Agendamento> buscarPorProfissionalEPeriodo(Long profissionalId, LocalDateTime inicio, LocalDateTime fim) {
+        List<Agendamento> agendamentos = agendamentoRepository.findByDataAgendamentoBetween(inicio, fim);
+        return agendamentos.stream()
+            .filter(a -> a.getProfissional().getId().equals(profissionalId))
+            .filter(a -> a.getStatus() == Agendamento.StatusAgendamento.AGENDADO)
+            .toList();
     }
     
     public List<Agendamento> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
@@ -194,65 +207,15 @@ public class AgendamentoService {
             throw new AgendamentoNotFoundException(id);
         }
     }
-    
-    public String confirmar(Long id) {
-        Optional<Agendamento> agendamento = buscarPorId(id);
-        if (agendamento.isPresent()) {
-            Agendamento ag = agendamento.get();
-            ag.setStatus(Agendamento.StatusAgendamento.CONFIRMADO);
-            agendamentoRepository.save(ag);
-            
-            // Generate WhatsApp link
-            return gerarLinkWhatsApp(ag);
-        } else {
-            throw new AgendamentoNotFoundException(id);
-        }
-    }
-    
-    private String gerarLinkWhatsApp(Agendamento agendamento) {
-        Usuario usuario = agendamento.getUsuario();
-        if (usuario == null) {
-            return null;
-        }
-        
-        // Format phone number (remove non-numeric characters and add 55 for Brazil)
-        String telefone = usuario.getTelefone().replaceAll("\\D", "");
-        if (!telefone.startsWith("55")) {
-            telefone = "55" + telefone;
-        }
-        
-        // Format date and time
-        String dataFormatada = agendamento.getDataAgendamento().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        String mensagem = getMensagem(agendamento, dataFormatada);
-
-        // Encode message for URL
-        mensagem = java.net.URLEncoder.encode(mensagem, StandardCharsets.UTF_8);
-
-        // Generate WhatsApp link
-        return "https://wa.me/" + telefone + "?text=" + mensagem;
-    }
-
-    private static String getMensagem(Agendamento agendamento, String dataFormatada) {
-        String horario = agendamento.getHorarioAgendado();
-        Usuario usuario = agendamento.getUsuario();
-        String cliente = usuario != null ? usuario.getNomeUsuario() : "N/A";
-        String servico = agendamento.getServico().getNome();
-        String profissional = agendamento.getProfissional().getNome();
-
-        // Create message
-        return String.format(
-            "Cliente *%s* agendou o serviço *%s* para o dia *%s* às *%s* para o profissional *%s*.",
-            cliente, servico, dataFormatada, horario, profissional
-        );
-    }
 
     public void deletar(Long id) {
-        if (agendamentoRepository.existsById(id)) {
-            agendamentoRepository.deleteById(id);
-        } else {
+        if (!agendamentoRepository.existsById(id)) {
             throw new AgendamentoNotFoundException(id);
         }
+        agendamentoRepository.deleteById(id);
     }
+    
+    
     
     private void validarAgendamento(Agendamento agendamento) {
         if (!isHorarioValido(agendamento.getHorarioAgendado())) {
@@ -316,7 +279,7 @@ public class AgendamentoService {
         List<Agendamento> agendamentos = agendamentoRepository.findByDataAgendamentoBetween(dataInicio, dataFim);
         
         Map<String, Long> estatisticas = agendamentos.stream()
-            .filter(a -> a.getStatus() == Agendamento.StatusAgendamento.AGENDADO || a.getStatus() == Agendamento.StatusAgendamento.CONFIRMADO)
+            .filter(a -> a.getStatus() == Agendamento.StatusAgendamento.AGENDADO)
             .collect(Collectors.groupingBy(
                 a -> a.getProfissional().getNome(),
                 Collectors.counting()
@@ -324,6 +287,33 @@ public class AgendamentoService {
         
         return estatisticas.entrySet().stream()
             .map(entry -> new EstatisticasProfissionalDTO(entry.getKey(), entry.getValue()))
+            .toList();
+    }
+
+    public List<RelatorioFinanceiroDTO> getRelatorioFinanceiro(LocalDateTime dataInicio, LocalDateTime dataFim, Long profissionalId) {
+        List<Agendamento> agendamentos = agendamentoRepository.findByDataAgendamentoBetween(dataInicio, dataFim);
+        
+        if (profissionalId != null) {
+            agendamentos = agendamentos.stream()
+                .filter(a -> a.getProfissional().getId().equals(profissionalId))
+                .toList();
+        }
+        
+        Map<String, java.util.List<Agendamento>> agendamentosPorProfissional = agendamentos.stream()
+            .filter(a -> a.getStatus() == Agendamento.StatusAgendamento.AGENDADO && a.getValorCobrado() != null)
+            .collect(Collectors.groupingBy(a -> a.getProfissional().getNome()));
+        
+        return agendamentosPorProfissional.entrySet().stream()
+            .map(entry -> {
+                String nomeProfissional = entry.getKey();
+                List<Agendamento> agendamentosProfissional = entry.getValue();
+                java.math.BigDecimal valorTotal = agendamentosProfissional.stream()
+                    .map(Agendamento::getValorCobrado)
+                    .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+                Long quantidade = (long) agendamentosProfissional.size();
+                return new RelatorioFinanceiroDTO(nomeProfissional, valorTotal, quantidade);
+            })
+            .sorted((a, b) -> b.getValorTotal().compareTo(a.getValorTotal()))
             .toList();
     }
 }
