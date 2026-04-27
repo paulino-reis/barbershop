@@ -2,52 +2,51 @@ package com.hair.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.jspecify.annotations.Nullable;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "agendamentos")
 @Data
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Agendamento {
-    
+public class Agendamento extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "profissional_id", nullable = false)
     private Profissional profissional;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "servico_id", nullable = false)
     private Servico servico;
-    
-    @Column(name = "data_marcacao", nullable = false)
-    private LocalDateTime dataMarcacao;
-    
+
     @Column(name = "data_agendamento", nullable = false)
     private LocalDateTime dataAgendamento;
-    
+
     @Column(name = "horario_agendado", nullable = false)
     private String horarioAgendado;
-    
-    @Nullable
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
-    
+
     @Enumerated(EnumType.STRING)
-    @Nullable
-    private StatusAgendamento status;
-    
-    @Nullable
+    private StatusAgendamento status = StatusAgendamento.AGENDADO;
+
+    @Column(name = "valor_cobrado", precision = 10, scale = 2)
+    private BigDecimal valorCobrado;
+
     @Column(name = "canceled_by_user_id")
     private Long canceledByUserId;
     
@@ -66,6 +65,6 @@ public class Agendamento {
     private LocalDateTime updatedAt;
     
     public enum StatusAgendamento {
-        AGENDADO, CONFIRMADO, CANCELADO, CONCLUIDO
+        AGENDADO, CANCELADO
     }
 }

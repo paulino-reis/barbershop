@@ -1,7 +1,9 @@
 package com.hair.security;
 
+import com.hair.dto.UsuarioDTO;
 import com.hair.model.Usuario;
 import com.hair.repository.UsuarioRepository;
+import com.hair.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,11 +14,12 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-    
+
     private final UsuarioRepository usuarioRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final UsuarioService usuarioService;
     
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         authenticationManager.authenticate(
@@ -44,19 +47,20 @@ public class AuthenticationService {
         if (request.senha().isBlank()) {
             throw new IllegalArgumentException("Senha não pode ser vazia");
         }
-        
-        Usuario usuario = new Usuario();
-        usuario.setNomeUsuario(request.nomeUsuario());
-        usuario.setLogin(request.login());
-        usuario.setSenha(java.util.Objects.requireNonNull(passwordEncoder.encode(request.senha())));
-        usuario.setTelefone(request.telefone());
-        usuario.setEmail(request.email());
-        usuario.setRole("USER");
-        
-        Usuario usuarioSalvo = usuarioRepository.save(usuario);
-        
+
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
+        usuarioDTO.setNomeUsuario(request.nomeUsuario());
+        usuarioDTO.setLogin(request.login());
+        usuarioDTO.setSenha(request.senha());
+        usuarioDTO.setTelefone(request.telefone());
+        usuarioDTO.setEmail(request.email());
+        usuarioDTO.setRole("USER");
+        usuarioDTO.setAtivo(true);
+
+        Usuario usuarioSalvo = usuarioService.salvar(usuarioDTO);
+
         String jwtToken = jwtService.generateToken(usuarioSalvo);
-        
+
         return new AuthenticationResponse(
             jwtToken,
             usuarioSalvo.getId(),

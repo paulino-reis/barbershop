@@ -46,7 +46,7 @@ const Perfil = () => {
       const response = await axios.get('/api/agendamentos');
       setAgendamentos(response.data);
     } catch (error) {
-      console.error('Erro ao carregar agendamentos:', error);
+      // Error handled silently
     }
   };
 
@@ -122,6 +122,14 @@ const Perfil = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const isAgendamentoFuturo = (dataAgendamento, horarioAgendado) => {
+    const data = new Date(dataAgendamento);
+    const [hora, minuto] = horarioAgendado.split(':');
+    data.setHours(parseInt(hora), parseInt(minuto), 0, 0);
+    const agora = new Date();
+    return data >= agora;
   };
 
   const cancelarAgendamento = async (id) => {
@@ -392,7 +400,6 @@ const Perfil = () => {
                       <td className="px-4 py-2 text-sm">
                         <span className={`inline-block px-2 py-1 text-xs rounded ${
                           agendamento.status === 'AGENDADO' ? 'bg-blue-100 text-blue-800' :
-                          agendamento.status === 'CONFIRMADO' ? 'bg-green-100 text-green-800' :
                           agendamento.status === 'CANCELADO' ? 'bg-red-100 text-red-800' :
                           'bg-gray-100 text-gray-800'
                         }`}>
@@ -400,7 +407,7 @@ const Perfil = () => {
                         </span>
                       </td>
                       <td className="px-4 py-2 text-right text-sm">
-                        {agendamento.status === 'AGENDADO' && (
+                        {agendamento.status === 'AGENDADO' && isAgendamentoFuturo(agendamento.dataAgendamento, agendamento.horarioAgendado) && (
                           <button
                             onClick={() => cancelarAgendamento(agendamento.id)}
                             className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"

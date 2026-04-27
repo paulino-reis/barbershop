@@ -3,6 +3,7 @@ package com.hair.controller;
 import com.hair.dto.AgendamentoDTO;
 import com.hair.dto.EstatisticasProfissionalDTO;
 import com.hair.dto.HorarioOcupadoDTO;
+import com.hair.dto.RelatorioFinanceiroDTO;
 import com.hair.model.Agendamento;
 import com.hair.model.Profissional;
 import com.hair.model.Usuario;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/agendamentos")
@@ -88,6 +88,24 @@ public class AgendamentoController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim) {
         return ResponseEntity.ok(agendamentoService.getEstatisticasPorProfissional(inicio, fim));
     }
+
+    @GetMapping("/relatorio-financeiro")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<RelatorioFinanceiroDTO>> getRelatorioFinanceiro(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim,
+            @RequestParam(required = false) Long profissionalId) {
+        return ResponseEntity.ok(agendamentoService.getRelatorioFinanceiro(inicio, fim, profissionalId));
+    }
+
+    @GetMapping("/por-profissional-periodo")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Agendamento>> buscarAgendamentosPorProfissionalEPeriodo(
+            @RequestParam Long profissionalId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim) {
+        return ResponseEntity.ok(agendamentoService.buscarPorProfissionalEPeriodo(profissionalId, inicio, fim));
+    }
     
     @GetMapping("/hoje")
     @PreAuthorize("hasRole('ADMIN')")
@@ -105,7 +123,12 @@ public class AgendamentoController {
     @PostMapping
     public ResponseEntity<Agendamento> salvar(@Valid @RequestBody AgendamentoDTO agendamentoDTO, 
                                              Authentication authentication) {
-        return ResponseEntity.ok(agendamentoService.salvar(agendamentoDTO, authentication));
+        try {
+            Agendamento saved = agendamentoService.salvar(agendamentoDTO, authentication);
+            return ResponseEntity.ok(saved);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
     
     @PutMapping("/{id}")
@@ -125,21 +148,7 @@ public class AgendamentoController {
         agendamentoService.cancelar(id, usuario.getId());
         return ResponseEntity.ok().build();
     }
-    
-    @PostMapping("/{id}/confirmar")
-    public ResponseEntity<Map<String, String>> confirmar(@PathVariable Long id) {
-        // Check if user is admin or owns the appointment
-        Agendamento agendamento = agendamentoService.buscarPorId(id).orElse(null);
-        if (agendamento == null) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        String whatsappLink = agendamentoService.confirmar(id);
-        Map<String, String> response = new java.util.HashMap<>();
-        response.put("whatsappLink", whatsappLink);
-        return ResponseEntity.ok(response);
-    }
-    
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         agendamentoService.deletar(id);
