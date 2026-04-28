@@ -13,12 +13,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     
     Optional<Usuario> findByLogin(String login);
     
-    Optional<Usuario> findByTelefone(String telefone);
-    
     boolean existsByLogin(String login);
     
     boolean existsByTelefone(String telefone);
     
     @Query("SELECT u FROM Usuario u WHERE u.login = :login AND u.ativo = true")
     Optional<Usuario> findByLoginAndAtivo(@Param("login") String login);
+    
+    @Query("SELECT u FROM Usuario u WHERE u.login = :login AND u.tenantId = :tenantId")
+    Optional<Usuario> findByLoginAndTenantId(@Param("login") String login, @Param("tenantId") Integer tenantId);
 }
