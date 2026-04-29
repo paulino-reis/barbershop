@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Calendar, Clock, User, Scissors, Menu, X, Edit2, Trash2, Check } from 'lucide-react';
+import { Calendar, Clock, User, Scissors, Menu, X, Edit2, Trash2, Check, MessageCircle } from 'lucide-react';
 import axios from 'axios';
 import Navigation from '../components/Navigation';
 
@@ -295,7 +295,11 @@ const Agendamento = () => {
                   </div>
 
                   {/* Checkbox WhatsApp */}
-                  <div className="flex-1 sm:flex-none">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      <MessageCircle className="inline h-4 w-4 mr-1" />
+                      WhatsApp
+                    </label>
                     <label className="flex items-center gap-2 cursor-pointer bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-600 hover:bg-slate-700/50 transition-colors" title="Envia Whatsapp de confirmação de agendamento">
                       <input
                         type="checkbox"

@@ -65,11 +65,17 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     if (token) {
       // Verify token validity and get tenant config
+      const hostname = window.location.hostname.replace('www.', '');
+      const tenantSlug = hostname === 'localhost' || hostname === '127.0.0.1' ? 'localhost' : hostname;
+      
+      console.log('Loading tenant config for slug:', tenantSlug);
+      
       Promise.all([
         axios.get('/api/usuarios/perfil'),
-        axios.get(`/api/v1/config/${window.location.hostname.replace('www.', '')}`)
+        axios.get(`/api/v1/config/${tenantSlug}`)
       ])
         .then(([userResponse, tenantResponse]) => {
+          console.log('Tenant config loaded:', tenantResponse.data);
           setUser(userResponse.data);
           setTenantConfig(tenantResponse.data);
         })

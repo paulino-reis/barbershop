@@ -11,7 +11,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,20 +38,6 @@ public class Usuario extends BaseEntity implements UserDetails {
     
     @Column(name = "endereco")
     private String endereco;
-    
-    @Column(name = "data_servico")
-    private LocalDateTime dataServico;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "servico_id")
-    private transient Servico servico;
-    
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "profissional_id")
-    private transient Profissional profissional;
-    
-    @Column(name = "valor_pago", precision = 10, scale = 2)
-    private BigDecimal valorPago;
     
     @Column(nullable = false, unique = true)
     private String login;

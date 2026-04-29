@@ -56,7 +56,6 @@ public class UsuarioService {
         usuario.setTelefone(usuarioDTO.getTelefone());
         usuario.setEmail(usuarioDTO.getEmail() != null ? usuarioDTO.getEmail() : "");
         usuario.setEndereco(usuarioDTO.getEndereco());
-        usuario.setValorPago(usuarioDTO.getValorPago());
         usuario.setLogin(usuarioDTO.getLogin());
         usuario.setSenha(usuarioDTO.getSenha());
         usuario.setRole(usuarioDTO.getRole());
@@ -101,7 +100,6 @@ public class UsuarioService {
         usuarioAtual.setTelefone(usuarioDTO.getTelefone());
         usuarioAtual.setEmail(usuarioDTO.getEmail());
         usuarioAtual.setEndereco(usuarioDTO.getEndereco());
-        usuarioAtual.setValorPago(usuarioDTO.getValorPago());
         usuarioAtual.setLogin(usuarioDTO.getLogin());
         usuarioAtual.setRole(usuarioDTO.getRole());
         usuarioAtual.setAtivo(usuarioDTO.getAtivo());

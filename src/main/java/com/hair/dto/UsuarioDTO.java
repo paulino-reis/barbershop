@@ -3,8 +3,6 @@ package com.hair.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Data
 public class UsuarioDTO {
     
@@ -19,12 +17,6 @@ public class UsuarioDTO {
     private String email;
     
     private String endereco;
-    
-    private Long servicoId;
-    
-    private Long profissionalId;
-    
-    private BigDecimal valorPago;
     
     @NotBlank(message = "Login é obrigatório")
     private String login;
