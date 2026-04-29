@@ -3,6 +3,7 @@ package com.hair.security;
 import com.hair.dto.UsuarioDTO;
 import com.hair.model.Usuario;
 import com.hair.repository.UsuarioRepository;
+import com.hair.service.TenantContext;
 import com.hair.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,8 +30,16 @@ public class AuthenticationService {
             )
         );
         
-        Usuario usuario = usuarioRepository.findByLogin(request.login())
-            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+        Integer currentTenantId = TenantContext.getCurrentTenantId();
+        Usuario usuario;
+        
+        if (currentTenantId != null) {
+            usuario = usuarioRepository.findByLoginAndTenantId(request.login(), currentTenantId)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado para este tenant"));
+        } else {
+            usuario = usuarioRepository.findByLogin(request.login())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+        }
         
         String jwtToken = jwtService.generateToken(usuario);
         

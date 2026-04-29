@@ -279,32 +279,34 @@ const Agendamento = () => {
                       <Scissors className="inline h-4 w-4 mr-1" />
                       Serviço
                     </label>
-                    <div className="flex gap-2">
-                      <select
-                        value={selectedServico}
-                        onChange={(e) => setSelectedServico(e.target.value)}
-                        className="flex-1 px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-                        required
-                      >
-                        <option value="">Selecione um serviço</option>
-                        {servicos.map(servico => (
-                          <option key={servico.id} value={servico.id}>
-                            {servico.nome} - R$ {servico.preco.toFixed(2)}
-                          </option>
-                        ))}
-                      </select>
-                      <label className="flex items-center gap-2 cursor-pointer bg-slate-800/50 px-3 py-2 rounded-lg border border-slate-600 hover:bg-slate-700/50 transition-colors" title="Envia Whatsapp de confirmação de agendamento">
-                        <input
-                          type="checkbox"
-                          id="enviarWhatsApp"
-                          checked={enviarWhatsApp}
-                          onChange={(e) => setEnviarWhatsApp(e.target.checked)}
-                          className="w-4 h-4 text-primary-600 bg-slate-700 border-slate-600 rounded focus:ring-primary-500 focus:ring-2 cursor-pointer"
-                          title="Envia Whatsapp de confirmação de agendamento"
-                        />
-                        <span className="text-sm text-gray-300">Enviar WhatsApp</span>
-                      </label>
-                    </div>
+                    <select
+                      value={selectedServico}
+                      onChange={(e) => setSelectedServico(e.target.value)}
+                      className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                      required
+                    >
+                      <option value="">Selecione um serviço</option>
+                      {servicos.map(servico => (
+                        <option key={servico.id} value={servico.id}>
+                          {servico.nome} - R$ {servico.preco.toFixed(2)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Checkbox WhatsApp */}
+                  <div className="flex-1 sm:flex-none">
+                    <label className="flex items-center gap-2 cursor-pointer bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-600 hover:bg-slate-700/50 transition-colors" title="Envia Whatsapp de confirmação de agendamento">
+                      <input
+                        type="checkbox"
+                        id="enviarWhatsApp"
+                        checked={enviarWhatsApp}
+                        onChange={(e) => setEnviarWhatsApp(e.target.checked)}
+                        className="w-4 h-4 text-primary-600 bg-slate-700 border-slate-600 rounded focus:ring-primary-500 focus:ring-2 cursor-pointer"
+                        title="Envia Whatsapp de confirmação de agendamento"
+                      />
+                      <span className="text-sm text-gray-300">Enviar WhatsApp</span>
+                    </label>
                   </div>
                 </div>
 
