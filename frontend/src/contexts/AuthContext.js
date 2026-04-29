@@ -59,16 +59,22 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentHostname, setCurrentHostname] = useState(window.location.hostname);
+  const [tenantConfig, setTenantConfig] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      // Verify token validity
-      axios.get('/api/usuarios/perfil')
-        .then(response => {
-          setUser(response.data);
+      // Verify token validity and get tenant config
+      Promise.all([
+        axios.get('/api/usuarios/perfil'),
+        axios.get(`/api/v1/config/${window.location.hostname.replace('www.', '')}`)
+      ])
+        .then(([userResponse, tenantResponse]) => {
+          setUser(userResponse.data);
+          setTenantConfig(tenantResponse.data);
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error('Error loading tenant config:', error);
           localStorage.removeItem('token');
           setUser(null);
         })
@@ -154,7 +160,8 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    loading
+    loading,
+    tenantConfig
   };
 
   return (
