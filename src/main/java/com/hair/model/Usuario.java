@@ -33,7 +33,6 @@ public class Usuario extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private String telefone;
     
-    @Column(nullable = true)
     private String email;
     
     @Column(name = "endereco")
@@ -47,6 +46,9 @@ public class Usuario extends BaseEntity implements UserDetails {
     
     @Column(nullable = false)
     private String role = "USER";
+    
+    @Column(name = "tenant_id")
+    private Integer tenantId;
     
     @Column(nullable = false)
     private Boolean ativo = true;

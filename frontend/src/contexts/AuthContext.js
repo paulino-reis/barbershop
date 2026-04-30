@@ -76,13 +76,17 @@ export const AuthProvider = ({ children }) => {
       ])
         .then(([userResponse, tenantResponse]) => {
           console.log('Tenant config loaded:', tenantResponse.data);
+          console.log('Tenant name:', tenantResponse.data?.name);
           setUser(userResponse.data);
           setTenantConfig(tenantResponse.data);
         })
         .catch((error) => {
           console.error('Error loading tenant config:', error);
+          console.error('Error details:', error.response?.status, error.response?.data);
+          console.error('Error message:', error.message);
           localStorage.removeItem('token');
           setUser(null);
+          setTenantConfig(null);
         })
         .finally(() => {
           setLoading(false);

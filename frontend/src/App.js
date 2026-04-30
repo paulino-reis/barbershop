@@ -4,6 +4,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import LoginScreen from './pages/LoginScreen';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Agendamento from './pages/Agendamento';
 import AppointmentBooking from './pages/AppointmentBooking';
 import Perfil from './pages/Perfil';
@@ -21,6 +23,8 @@ function App() {
             <Routes>
               <Route path="/login" element={<LoginScreen />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route 
                 path="/agendamento" 
                 element={

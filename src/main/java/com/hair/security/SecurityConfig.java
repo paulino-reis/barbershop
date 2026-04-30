@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/servicos").permitAll()
                 .requestMatchers("/api/profissionais").permitAll()
                 .requestMatchers("/api/v1/config/**").permitAll()
+                .requestMatchers("/api/test/**").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
